@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        {{ APP_NAME }} 
+        {% if title %}
+             {{ title }}
+         {% endif %}
+        
+   </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='User/user.css') }}">
+</head>
+<body>
+
+    <h1>PY</h1>
+    <hr>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

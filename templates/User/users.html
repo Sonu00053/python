@@ -1,0 +1,133 @@
+{% extends "User/base.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+        }
+    </style>
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">{{ response.header }}</h4>
+        <a href="/" class="btn btn-secondary">Back</a>
+
+        </div>
+
+        <div class="card-body">
+            <form method="GET" action="{{ response.base_url }}" class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text"
+                           name="search"
+                           value="{{ response.search }}"
+                           class="form-control"
+                           placeholder="Search anything...">
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">
+                        Search
+                    </button>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            {% for head in response.thead %}
+                            <th>{{ head }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in response.users %}
+                        <tr>
+                            {% for value in response.tbody[loop.index0] %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+
+                    {% if response.page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{{ response.base_url }}?page={{ response.page - 1 }}">
+                            Previous
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Page {{ response.page }} of {{ response.total_pages }}
+                        </span>
+                    </li>
+
+                    {% if response.page < response.total_pages %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{{ response.base_url }}?page={{ response.page + 1 }}">
+                            Next
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                    {% endif %}
+
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+
+
+</div>
+<script>
+let timer;
+
+document.getElementById("searchInput").addEventListener("keyup", function() {
+
+    clearTimeout(timer);
+
+    let searchValue = this.value;
+
+    timer = setTimeout(function() {
+
+        fetch("{{ response.base_url }}?search=" + searchValue)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("table-data").innerHTML = data;
+        });
+
+    }, 400); // 400ms delay for better performance
+});
+</script>
+
+{% endblock %}
+
