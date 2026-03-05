@@ -1,6 +1,9 @@
 from curses import flash
 
 from flask import Blueprint, request, render_template, redirect, url_for, session,jsonify,flash
+import json
+import uuid
+from datetime import datetime
 from config.constant import PREFIX
 from models.dynamic_model import UserModel
 from helpers.message_helper import success, error
@@ -100,6 +103,103 @@ class UserController:
             return UserController.GenerateUserId()
         else:
             return user_id
+        
+        
+    @staticmethod
+    def AutoCron():
+        adddata = {
+            "user_id": UserController.GenerateUserId(),
+            "amount": "10",
+            "type": "credit",
+            "description": "Cron Job Credit",
+            
+        }
+        UserModel.add('income_wallet', adddata)
+        
+    @staticmethod
+    def message():
+
+        sender_id = session["user_id"]
+        receiver_id = "admin"
+
+        if request.method == "POST":
+
+            msg = request.form.get("message")
+
+            if not msg:
+                return redirect(url_for("user_bp.message"))
+
+            chat = UserModel.get_single_record(
+                "messages",
+                {"user_id": sender_id},
+                "*"
+            )
+
+            if chat:
+
+                # JSON decode safely
+                try:
+                    old_messages = json.loads(chat["message"]) if chat["message"] else []
+                except:
+                    old_messages = []
+
+                # serial id
+                new_id = old_messages[-1]["id"] + 1 if old_messages else 1
+
+                new_message = {
+                    "id": new_id,
+                    "sender_id": sender_id,
+                    "receiver_id": receiver_id,
+                    "message": msg,
+                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+
+                old_messages.append(new_message)
+                UserModel.update_record(
+                    "messages",
+                    {"user_id": sender_id},
+                    {"message": json.dumps(old_messages)}
+                )
+            else:
+
+                new_message = {
+                    "id": 1,
+                    "sender_id": sender_id,
+                    "receiver_id": receiver_id,
+                    "message": msg,
+                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+
+                UserModel.add(
+                    "messages",
+                    {
+                        "user_id": sender_id,
+                        "sender_id": "Admin",
+                        "message": json.dumps([new_message])
+                    }
+                )
+
+            return redirect(url_for("user_bp.message"))
+
+        # GET request
+
+        chat = UserModel.get_single_record(
+            "messages",
+            {"user_id": sender_id},
+            "*"
+        )
+
+        messages = []
+
+        if chat and chat["message"]:
+            try:
+                messages = json.loads(chat["message"])
+            except:
+                messages = []
+
+        return render_template("message.html", messages=messages,user = chat)
+        
+
     
     
     

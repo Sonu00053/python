@@ -1,6 +1,7 @@
 from curses import flash
 
 # import app
+# import app
 from flask import Blueprint, request, render_template, redirect, url_for, session,flash
 from controllers.User.Userinfo import UserController
 from controllers.User.Auth import LoginController
@@ -90,3 +91,8 @@ def logout():
 @login_required()
 def get_users():
     return UserController.get_users()
+
+@user_bp.route("/message", methods=["GET","POST"])
+@login_required()
+def message():
+    return UserController.message()
