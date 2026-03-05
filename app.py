@@ -56,7 +56,7 @@ def auto_cron_loop():
             socketio.emit("cron_update", {"msg": "Cron executed"})
         time.sleep(1)   # 1 second
 
-# background thread start
+# background thread start hsdasda
 threading.Thread(target=auto_cron_loop, daemon=True).start()
 
 # Blueprints
