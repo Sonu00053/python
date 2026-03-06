@@ -8,7 +8,7 @@ class UserModel:
         try:
             conn = get_connection()
             cursor = conn.cursor()
-            allowed_tables = ["users","income_wallet",'messages']
+            allowed_tables = ["users","income_wallet",'messages',"status"]
             if table not in allowed_tables:
                 raise ValueError("Invalid table name")
             fields = ", ".join(data.keys())

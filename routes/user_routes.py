@@ -55,7 +55,8 @@ def profile_page():
 
 @user_bp.route("/login", methods=["GET", "POST"])
 def login():
-
+    if "user_id" in session:
+            return redirect(url_for("user_bp.dashboard"))
     # 🔹 Agar form submit hua (POST request)
     if request.method == "POST":
         response = LoginController.login_user(request.form)
@@ -96,3 +97,8 @@ def get_users():
 @login_required()
 def message():
     return UserController.message()
+
+@user_bp.route("/upload_status", methods=["POST"])
+@login_required()
+def upload_status():
+    return UserController.upload_status()
