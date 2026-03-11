@@ -35,7 +35,7 @@ class UserModel:
             conn = get_connection()
             cursor = conn.cursor(dictionary=True)
 
-            allowed_tables = ["users"]
+            allowed_tables = ["users","income_wallet",'messages',"status"]
             if table not in allowed_tables:
                 raise ValueError("Invalid table name")
             if where != '':

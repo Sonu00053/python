@@ -102,3 +102,8 @@ def message():
 @login_required()
 def upload_status():
     return UserController.upload_status()
+
+@user_bp.route("/react_message", methods=["POST"])
+@login_required()
+def react_message():
+    return UserController.react_message()

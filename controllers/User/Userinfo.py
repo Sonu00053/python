@@ -23,7 +23,17 @@ from werkzeug.utils import secure_filename
 class UserController:
     UPLOAD_FOLDER = "static/uploads"
     STATUS_FOLDER = "static/status"
-    ALLOWED_EXTENSIONS = {"webm"}
+    ALLOWED_EXTENSIONS = [
+        "webm",
+        "mp4",
+        "mp3",
+        "wav",
+        "jpg",
+        "jpeg",
+        "png",
+        "pdf",
+    ]
+
     STATUS_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "mp4", "mov", "avi", "webm"}
 
     @staticmethod
@@ -191,77 +201,116 @@ class UserController:
 
     @staticmethod
     def message():
-        sender_id = session["user_id"]
+
+        sender_id = session.get("user_id")
         receiver_id = "admin"
 
-        # Handle POST (sending message)
         if request.method == "POST":
+
             msg = request.form.get("message")
+            reply_id = request.form.get("reply_id")
+
             audio = request.files.get("audio")
             video = request.files.get("video")
+            attachment = request.files.get("attachment")
 
             chat = UserModel.get_single_record("messages", {"user_id": sender_id}, "*")
+
             old_messages = []
 
-            if chat:
+            if chat and chat.get("message"):
                 try:
-                    old_messages = (
-                        json.loads(chat["message"]) if chat["message"] else []
-                    )
+                    old_messages = json.loads(chat["message"])
                 except:
                     old_messages = []
 
             new_id = old_messages[-1]["id"] + 1 if old_messages else 1
 
-            if video and UserController.allowed_file(video.filename):
+            new_message = None
+            filename = None
+            msg_type = None
+
+            os.makedirs(UserController.UPLOAD_FOLDER, exist_ok=True)
+
+            # ---------- VIDEO ----------
+            if video and video.filename and UserController.allowed_file(video.filename):
+
                 filename = secure_filename(
                     f"video_{sender_id}_{int(datetime.now().timestamp())}.webm"
                 )
-                os.makedirs(UserController.UPLOAD_FOLDER, exist_ok=True)
+
                 video.save(os.path.join(UserController.UPLOAD_FOLDER, filename))
-                new_message = {
-                    "id": new_id,
-                    "sender_id": sender_id,
-                    "receiver_id": receiver_id,
-                    "message": filename,
-                    "type": "video",
-                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                }
-            elif audio and UserController.allowed_file(audio.filename):
+
+                msg_type = "video"
+
+            # ---------- AUDIO ----------
+            elif audio and audio.filename and UserController.allowed_file(audio.filename):
+
                 filename = secure_filename(
                     f"voice_{sender_id}_{int(datetime.now().timestamp())}.webm"
                 )
-                os.makedirs(UserController.UPLOAD_FOLDER, exist_ok=True)
+
                 audio.save(os.path.join(UserController.UPLOAD_FOLDER, filename))
+
+                msg_type = "audio"
+
+            # ---------- ATTACHMENT ----------
+            elif attachment and attachment.filename and UserController.allowed_file(attachment.filename):
+
+                ext = attachment.filename.rsplit(".", 1)[1].lower()
+
+                filename = secure_filename(
+                    f"file_{sender_id}_{int(datetime.now().timestamp())}.{ext}"
+                )
+
+                attachment.save(os.path.join(UserController.UPLOAD_FOLDER, filename))
+
+                msg_type = "file"
+
+            # ---------- CREATE MESSAGE ----------
+            if filename:
+
                 new_message = {
                     "id": new_id,
                     "sender_id": sender_id,
                     "receiver_id": receiver_id,
                     "message": filename,
-                    "type": "audio",
+                    "text": msg.strip() if msg else "",
+                    "type": msg_type,
+                    "reply": reply_id,
+                    "reaction": "",
                     "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 }
-            elif msg:
+
+            elif msg and msg.strip():
+
                 new_message = {
                     "id": new_id,
                     "sender_id": sender_id,
                     "receiver_id": receiver_id,
-                    "message": msg,
+                    "message": msg.strip(),
                     "type": "text",
+                    "reply": reply_id,
+                    "reaction": "",
                     "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 }
-            else:
+
+            if not new_message:
                 return redirect(url_for("user_bp.message"))
 
             old_messages.append(new_message)
 
+            # ---------- SAVE ----------
             if chat:
+
                 UserModel.update_record(
                     "messages",
                     {"user_id": sender_id},
                     {"message": json.dumps(old_messages, indent=4)},
                 )
+
             else:
+
                 UserModel.add(
                     "messages",
                     {
@@ -273,25 +322,32 @@ class UserController:
 
             return redirect(url_for("user_bp.message"))
 
-        # Handle GET (show messages)
+        # ---------- GET MESSAGES ----------
         chat = UserModel.get_single_record("messages", {"user_id": sender_id}, "*")
         status = UserModel.get_single_record("status", {"user_id": sender_id}, "*")
+
         messages = []
-        if chat and chat["message"]:
+
+        if chat and chat.get("message"):
             try:
                 messages = json.loads(chat["message"])
             except:
                 messages = []
 
         status_messages = []
-        if status and status["message"]:
+
+        if status and status.get("message"):
             try:
-                status_messages = json.loads(status["message"])
+                all_status = json.loads(status["message"])
+                status_messages = [s for s in all_status if s.get("status") == 0]
             except:
                 status_messages = []
 
         return render_template(
-            "message.html", messages=messages, user=chat, status=status_messages
+            "message.html",
+            messages=messages,
+            user=chat,
+            status=status_messages,
         )
 
     @staticmethod
@@ -338,16 +394,16 @@ class UserController:
             new_id = messages[-1]["id"] + 1 if messages else 1
         else:
             messages = []
-            new_id = 1  # first status for user
+            new_id = 1  # first status
+
         new_status = {
-            "id": new_id,  # serial ID
+            "id": new_id,
             "type": "video" if ext in ["mp4", "mov", "avi", "webm"] else "image",
             "file": filename,
-            "status": 0,  # optional, can add text later
+            "status": 0,
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
-        # Append new status
         messages.append(new_status)
 
         # Save to DB
@@ -371,22 +427,64 @@ class UserController:
                 },
             )
 
-        return jsonify({"success": True, "file_path": f"/{file_path}"})
+        # Return JSON compatible with frontend
+        return jsonify(
+            {
+                "success": True,
+                "status": {
+                    "file": filename,
+                    "type": (
+                        "video" if ext in ["mp4", "mov", "avi", "webm"] else "image"
+                    ),
+                },
+            }
+        )
 
     @staticmethod
     def UpdateStatus():
         records = UserModel.all_records("status", "", "*")
         for record in records:
             messages = json.loads(record["message"])
-            print(f"Checking status for user_id: {record['user_id']} with {len(messages)} messages")
             updated = False
             for msg in messages:
                 created_time = datetime.strptime(msg["created_at"], "%Y-%m-%d %H:%M:%S")
-                if datetime.now() - created_time >= timedelta(hours=24):
+                time_diff = datetime.now() - created_time
+                print("Time diff:", time_diff)
+                if time_diff >= timedelta(hours=24):
                     if msg["status"] == 0:
                         msg["status"] = 1
                         updated = True
+                        print("Status expired")
             if updated:
+                updated_json = json.dumps(messages, indent=4)
                 UserModel.update_record(
-                    "status", {"id": record["id"]}, {"message": json.dumps(messages)}
+                    "status", {"id": record["id"]}, {"message": updated_json}
                 )
+                
+    @staticmethod
+    def react_message():
+        data = request.json
+
+        msg_id = int(data["message_id"])
+        emoji = data["emoji"]
+
+        sender_id = session.get("user_id")
+
+        chat = UserModel.get_single_record("messages", {"user_id": sender_id}, "*")
+
+        messages = []
+
+        if chat and chat.get("message"):
+            messages = json.loads(chat["message"])
+
+        for m in messages:
+            if m["id"] == msg_id:
+                m["reaction"] = emoji
+
+        UserModel.update_record(
+            "messages",
+            {"user_id": sender_id},
+            {"message": json.dumps(messages, indent=4)},
+        )
+
+        return jsonify({"success": True})
