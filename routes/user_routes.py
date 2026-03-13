@@ -107,3 +107,8 @@ def upload_status():
 @login_required()
 def react_message():
     return UserController.react_message()
+
+@user_bp.route("/delete_message", methods=["POST"])
+@login_required()
+def delete_message():
+    return UserController.delete_message()

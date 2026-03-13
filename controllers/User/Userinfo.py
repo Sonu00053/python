@@ -201,7 +201,6 @@ class UserController:
 
     @staticmethod
     def message():
-
         sender_id = session.get("user_id")
         receiver_id = "admin"
 
@@ -279,6 +278,7 @@ class UserController:
                     "type": msg_type,
                     "reply": reply_id,
                     "reaction": "",
+                    "status": "0",
                     "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 }
 
@@ -292,6 +292,7 @@ class UserController:
                     "type": "text",
                     "reply": reply_id,
                     "reaction": "",
+                    "status": "0",
                     "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 }
 
@@ -331,9 +332,31 @@ class UserController:
         if chat and chat.get("message"):
             try:
                 messages = json.loads(chat["message"])
+
+                # convert status to int
+                for m in messages:
+                    m["status"] = int(m.get("status", 0))
+                    if m.get("date"):
+                        try:
+                            dt = datetime.strptime(m["date"], "%Y-%m-%d %H:%M:%S")
+                            m["time"] = dt.strftime("%I:%M %p")
+                        except:
+                            m["time"] = ""
+
+                    # reply_text logic
+                    if m.get("reply"):
+                        reply_msg = next(
+                            (x for x in messages if str(x["id"]) == str(m["reply"])),
+                            None
+                        )
+                        m["reply_text"] = reply_msg.get("message") or reply_msg.get("text") or "" if reply_msg else "Message not found"
+                    else:
+                        m["reply_text"] = None
+
             except:
                 messages = []
 
+        # ---------- STATUS ----------
         status_messages = []
 
         if status and status.get("message"):
@@ -349,6 +372,8 @@ class UserController:
             user=chat,
             status=status_messages,
         )
+
+
 
     @staticmethod
     def status_allowed_file(filename):
@@ -464,27 +489,69 @@ class UserController:
     @staticmethod
     def react_message():
         data = request.json
-
         msg_id = int(data["message_id"])
         emoji = data["emoji"]
 
         sender_id = session.get("user_id")
-
         chat = UserModel.get_single_record("messages", {"user_id": sender_id}, "*")
+        if not chat or not chat.get("message"):
+            return jsonify(success=False)
 
-        messages = []
-
-        if chat and chat.get("message"):
-            messages = json.loads(chat["message"])
+        messages = json.loads(chat["message"])
 
         for m in messages:
             if m["id"] == msg_id:
-                m["reaction"] = emoji
+                if "reactions" not in m or not m["reactions"]:
+                    m["reactions"] = []
+                
+                # check if user already reacted
+                user_found = False
+                for r in m["reactions"]:
+                    if r["user_id"] == sender_id:
+                        r["emoji"] = emoji
+                        user_found = True
+                        break
+                if not user_found:
+                    m["reactions"].append({"user_id": sender_id, "emoji": emoji})
+                break
+
+        # Save updated messages back
+        UserModel.update_record(
+            "messages",
+            {"user_id": sender_id},
+            {"message": json.dumps(messages, indent=4)}
+        )
+
+        return jsonify(success=True, reaction=emoji)
+    
+    
+    @staticmethod
+    def delete_message():
+        data = request.json
+        msg_id = int(data.get("message_id"))
+        sender_id = session.get("user_id")
+
+        chat = UserModel.get_single_record("messages", {"user_id": sender_id}, "*")
+        if not chat or not chat.get("message"):
+            return jsonify(success=False)
+
+        try:
+            messages = json.loads(chat["message"])
+        except:
+            messages = []
+
+        # find and mark as deleted
+        for m in messages:
+            if m["id"] == msg_id:
+                m["status"] = 1  # deleted
+                m["message"] = ""  # remove content if you want
+                m["text"] = "" 
+                break
 
         UserModel.update_record(
             "messages",
             {"user_id": sender_id},
-            {"message": json.dumps(messages, indent=4)},
+            {"message": json.dumps(messages, indent=4)}
         )
 
-        return jsonify({"success": True})
+        return jsonify(success=True)

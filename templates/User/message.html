@@ -7,230 +7,19 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/emoji-mart@latest/css/emoji-mart.css"
+    />
 
-    <style>
-      body {
-        background: #ece5dd;
-      }
-
-      /* STATUS SIDEBAR */
-      .sidebar {
-        width: 260px;
-        background: #f8f9fa;
-        height: 100vh;
-        overflow-y: auto;
-        position: fixed;
-        left: 0;
-        top: 0;
-        padding: 15px;
-      }
-
-      #statusCircleWrapper {
-        position: relative;
-        width: 70px;
-        height: 70px;
-        margin-top: 10px;
-      }
-
-      #statusCircleWrapper svg {
-        width: 70px;
-        height: 70px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        transform: rotate(-90deg);
-      }
-
-      #statusCircleWrapper img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        object-fit: cover;
-        cursor: pointer;
-      }
-
-      #statusCircleWrapper circle {
-        fill: none;
-        stroke-width: 4;
-        transition: stroke 0.3s;
-        cursor: pointer;
-      }
-
-      /* STATUS VIEWER */
-      .status-viewer {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: black;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-      }
-
-      .status-viewer img,
-      .status-viewer video {
-        max-width: 90%;
-        max-height: 90%;
-      }
-
-      .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        font-size: 30px;
-        color: white;
-        cursor: pointer;
-        z-index: 1000;
-      }
-
-      /* CHAT */
-      .chat-container {
-        max-width: 600px;
-        margin-left: 280px;
-        margin-top: 20px;
-        height: 90vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .chat-header {
-        background: #075e54;
-        color: white;
-        padding: 15px;
-        font-weight: bold;
-      }
-
-      .chat-box {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px;
-        background: #efeae2;
-      }
-
-      .message {
-        max-width: 70%;
-        padding: 10px 15px;
-        border-radius: 10px;
-        margin-bottom: 10px;
-      }
-
-      .sent {
-        background: #d9fdd3;
-        margin-left: auto;
-      }
-      .received {
-        background: white;
-      }
-
-      .time {
-        font-size: 11px;
-        display: block;
-        margin-top: 3px;
-        text-align: right;
-        color: #555;
-      }
-
-      .chat-input {
-        background: white;
-        padding: 10px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-
-      /* CALL MODAL */
-
-      .callModal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #000;
-        z-index: 9999;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        color: #fff;
-      }
-
-      .callHeader {
-        position: absolute;
-        top: 40px;
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-      }
-
-      .callHeader span {
-        display: block;
-        font-size: 14px;
-        opacity: 0.8;
-      }
-
-      .callVideos {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .callVideos video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      #localVideo {
-        position: absolute;
-        width: 150px;
-        height: 200px;
-        bottom: 120px;
-        right: 20px;
-        border-radius: 10px;
-        border: 2px solid #fff;
-        object-fit: cover;
-      }
-
-      .callControls {
-        position: absolute;
-        bottom: 40px;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-      }
-
-      .callBtn {
-        width: 65px;
-        height: 65px;
-        border-radius: 50%;
-        border: none;
-        font-size: 26px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
-
-      .endCall {
-        background: #ff3b30;
-        color: white;
-      }
-
-      .acceptCall {
-        background: #34c759;
-        color: white;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='User/message.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css"
+    />
   </head>
   <audio id="dialTone" loop>
     <source
@@ -238,1082 +27,1321 @@
       type="audio/mp3"
     />
   </audio>
-
   <body>
     <!-- STATUS SIDEBAR -->
     <div class="sidebar">
-  <h6 class="mb-3">Status</h6>
+      <h6 class="mb-3">Status</h6>
 
-  <form id="statusForm" enctype="multipart/form-data">
-    <input class="form-control w-100 mb-3" type="file" id="statusFile">
-    <button type="button" class="btn btn-success w-100 mb-3" id="statusUploadBtn">
-      Upload Status
-    </button>
-  </form>
+      <form id="statusForm" enctype="multipart/form-data">
+        <input class="form-control w-100 mb-3" type="file" id="statusFile" />
+        <button
+          type="button"
+          class="btn btn-success w-100 mb-3"
+          id="statusUploadBtn"
+        >
+          Upload Status
+        </button>
+      </form>
+       
 
-  <div id="statusCircleWrapper">
-    <svg id="statusCircle"></svg>
-    <img id="statusImage" src="" alt="Status">
-  </div>
-</div>
-
-
-<!-- CHAT CONTAINER -->
-<div class="chat-container shadow">
-
-  <!-- HEADER -->
-  <div class="chat-header">
-    {{ user.sender_id if user else 'Chat' }}
-
-    <div style="float:right">
-      <button onclick="startAudioCall()" class="btn btn-light btn-sm">📞</button>
-      <button onclick="startVideoCall()" class="btn btn-light btn-sm">🎥</button>
+      <div id="statusCircleWrapper">
+        <svg id="statusCircle"></svg>
+        <img id="statusImage" src="" alt="Status" />
+      </div>
     </div>
-  </div>
 
-
-  <!-- CHAT MESSAGES -->
-  <div class="chat-box" id="chatBox">
-
-{% for msg in messages %}
-
-{% set ext = msg.message.split('.')[-1].lower() if msg.message else '' %}
-
-{% if msg.sender_id == session["user_id"] %}
-<div class="message sent">
-{% else %}
-<div class="message received">
-{% endif %}
-
-
-{% if msg.type == "text" and msg.message %}
-
-{{ msg.message }}
-
-{% elif msg.type == "audio" %}
-
-<audio controls>
-<source src="{{ url_for('static', filename='uploads/' ~ msg.message) }}">
-</audio>
-
-{% if msg.text %}
-<div style="margin-top:5px">{{ msg.text }}</div>
-{% endif %}
-
-
-{% elif msg.type == "video" %}
-
-<video controls width="250">
-<source src="{{ url_for('static', filename='uploads/' ~ msg.message) }}">
-</video>
-
-{% if msg.text %}
-<div style="margin-top:5px">{{ msg.text }}</div>
-{% endif %}
-
-
-{% elif msg.type == "file" %}
-
-{% if ext in ['jpg','jpeg','png','gif','webp'] %}
-
-<img src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
-style="max-width:250px;border-radius:8px">
-
-{% elif ext in ['mp4','webm','ogg'] %}
-
-<video controls width="250">
-<source src="{{ url_for('static', filename='uploads/' ~ msg.message) }}">
-</video>
-
-{% elif ext in ['mp3','wav','ogg'] %}
-
-<audio controls>
-<source src="{{ url_for('static', filename='uploads/' ~ msg.message) }}">
-</audio>
-
-{% else %}
-
-<a href="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
-target="_blank"
-class="btn btn-sm btn-outline-primary">
-📎 {{ msg.message }}
-</a>
-
-{% endif %}
-
-{% if msg.text %}
-<div style="margin-top:6px">{{ msg.text }}</div>
-{% endif %}
-
-{% endif %}
-
-<span class="time">{{ msg.date }}</span>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-
-<!-- ATTACHMENT PREVIEW -->
-<div id="filePreview"
-style="display:none;background:white;padding:10px;border-radius:8px;margin:10px">
-
-<div id="previewContent"></div>
-
-<button type="button"
-onclick="removeAttachment()"
-class="btn btn-sm btn-danger">
-
-✖ Remove
-
-</button>
-
-</div>
-
-
-<!-- CHAT INPUT -->
-<form method="POST" enctype="multipart/form-data" id="chatForm">
-
-<div class="chat-input">
-
-<input
-type="text"
-name="message"
-class="form-control"
-placeholder="Type message"
-id="messageInput"
-/>
-
-<button type="submit" class="btn btn-success">
-Send
-</button>
-
-<button type="button"
-class="btn btn-secondary"
-onclick="document.getElementById('attachmentInput').click()">
-📎
-</button>
-
-<input
-type="file"
-name="attachment"
-id="attachmentInput"
-style="display:none"
-/>
-
-<button type="button" class="btn btn-primary" id="voiceBtn">
-🎤
-</button>
-
-<button type="button" class="btn btn-warning" id="recordBtn">
-⏺️
-</button>
-
-<button type="button" class="btn btn-danger" id="recordVideoBtn">
-🎥
-</button>
-
-</div>
-
-</form>
-
-
-<!-- VIDEO RECORD PREVIEW (FLOATING) -->
-<div id="videoPreviewBox"
-style="
-position:fixed;
-bottom:90px;
-right:20px;
-width:220px;
-background:black;
-border-radius:10px;
-overflow:hidden;
-display:none;
-z-index:999;
-">
-
-<video id="videoPreview" autoplay muted style="width:100%"></video>
-
-</div>
-
-
-
-<!-- STATUS VIEWER -->
-<div class="status-viewer" id="statusViewer">
-<button type="button" onclick="closeStatus()" class="close-btn">✖</button>
-<div id="statusContent"></div>
-</div>
-
-
-
-<!-- AUDIO CALL -->
-<div id="audioCallModal" class="callModal">
-
-<div class="callHeader">
-📞 Audio Call
-<span id="callStatus">Calling...</span>
-</div>
-
-<div class="callControls">
-<button id="acceptAudioCall" class="callBtn acceptCall">✔</button>
-<button id="endAudioCallBtn" class="callBtn endCall">✖</button>
-</div>
-
-</div>
-
-
-
-<!-- VIDEO CALL -->
-<div id="videoCallModal" class="callModal">
-
-<div class="callHeader">
-🎥 Video Call
-<span id="callStatusVideo">Calling...</span>
-</div>
-
-<div class="callVideos">
-
-<video id="remoteVideo" autoplay playsinline></video>
-
-<video id="localVideo" autoplay muted playsinline></video>
-
-</div>
-
-<div class="callControls">
-<button id="acceptVideoCall" class="callBtn acceptCall">✔</button>
-<button id="endVideoCallBtn" class="callBtn endCall">✖</button>
-</div>
-
-</div>
-
-</div>
+    <!-- CHAT CONTAINER -->
+    <div class="chat-container shadow">
+      <!-- HEADER -->
+      <div class="chat-header">
+        {{ user.sender_id if user else 'Chat' }}
+
+        <div style="float: right">
+          <button onclick="startAudioCall()" class="btn btn-light btn-sm">
+            📞
+          </button>
+          <button onclick="startVideoCall()" class="btn btn-light btn-sm">
+            🎥
+          </button>
+        </div>
+      </div>
+
+      <!-- CHAT MESSAGES -->
+      <div class="chat-box" id="chatBox">
+        {% for msg in messages %}
+
+        <div
+          class="message {% if msg.sender_id == session['user_id'] %}sent{% else %}received{% endif %} {% if msg.status|int == 1 %}deleted{% endif %}"
+          id="msg{{msg.id}}"
+        >
+          {% if msg.status|int == 0 %}
+
+          <!-- REPLY BOX -->
+          {% if msg.reply %}
+          <div class="replyBox" onclick="scrollToMsg('{{msg.reply}}')">
+            ↩ {{ msg.reply_text }}
+          </div>
+          {% endif %}
+
+          <!-- MESSAGE CONTENT -->
+          <div class="msgContent">
+            {% if msg.type == "text" and msg.message %} {{ msg.message }} {%
+            elif msg.type == "audio" %}
+            <audio controls>
+              <source
+                src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
+              />
+            </audio>
+
+            {% elif msg.type == "video" %}
+            <video controls width="250">
+              <source
+                src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
+              />
+            </video>
+
+            {% elif msg.type == "file" %} {% set ext =
+            msg.message.split('.')[-1].lower() %} {% if ext in
+            ['jpg','jpeg','png','gif','webp'] %}
+            <img
+              src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
+              style="max-width: 250px; border-radius: 8px"
+            />
+
+            {% elif ext in ['mp4','webm'] %}
+            <video controls width="250">
+              <source
+                src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
+              />
+            </video>
+
+            {% elif ext in ['mp3','wav','ogg'] %}
+            <audio controls>
+              <source
+                src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
+              />
+            </audio>
+
+            {% else %}
+            <a
+              href="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
+              target="_blank"
+            >
+              📎 {{ msg.message }}
+            </a>
+            {% endif %} {% endif %}
+            <div class="msgTime">{{ msg.time }}</div>
+          </div>
+
+          <!-- REACTIONS -->
+          <div class="reactionBox" id="reaction{{msg.id}}">
+            {% if msg.reactions %} {% for r in msg.reactions %}
+            <span class="reaction">{{ r.emoji }}</span>
+            {% endfor %} {% endif %}
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="msgActions">
+            <button class="reactBtn" data-id="{{msg.id}}">😊</button>
+
+            <div class="reactionPanel" id="panel{{msg.id}}"></div>
+
+            <div class="moreMenuWrapper">
+              <button class="moreBtn">⋮</button>
+
+              <div class="moreMenu">
+                <button
+                  class="replyMenuBtn iconBtn"
+                  data-id="{{msg.id}}"
+                  data-text="{{msg.message}}"
+                >
+                  <i class="bi bi-reply"></i> Reply
+                </button>
+
+                <button class="deleteMenuBtn iconBtn" data-id="{{msg.id}}">
+                  <i class="bi bi-trash"> Delete</i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {% else %}
+
+          <div class="deletedTextWrapper">
+            <div class="deletedText"><i>This message was deleted</i></div>
+
+            <!-- TIME + ICON -->
+            <div class="deletedMsgInfo">
+              <span class="msgTime">{{ msg.time }}</span>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        {% endfor %}
+      </div>
+      <div
+        id="replyPreview"
+        style="
+          display: none;
+          background: #f1f1f1;
+          padding: 8px;
+          border-left: 4px solid #25d366;
+          margin: 10px;
+          border-radius: 6px;
+        "
+      >
+        <span id="replyPreviewText"></span>
+
+        <button
+          onclick="cancelReply()"
+          class="btn btn-sm btn-danger"
+          style="float: right"
+        >
+          ✖
+        </button>
+      </div>
+      <div
+        id="filePreview"
+        style="
+          display: none;
+          background: white;
+          padding: 10px;
+          border-radius: 8px;
+          margin: 10px;
+        "
+      >
+        <div id="previewContent"></div>
+
+        <button
+          type="button"
+          onclick="removeAttachment()"
+          class="btn btn-sm btn-danger"
+        >
+          ✖ Remove
+        </button>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" id="chatForm">
+        <div class="chat-input">
+          <button type="button" id="emojiBtn" class="btn btn-light">😊</button>
+          <input type="hidden" name="reply_id" id="replyId" />
+
+          <input
+            type="text"
+            name="message"
+            class="form-control"
+            placeholder="Type message"
+            id="messageInput"
+          />
+          <button type="submit" class="btn btn-success">Send</button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="document.getElementById('attachmentInput').click()"
+          >
+            📎
+          </button>
+
+          <input
+            type="file"
+            name="attachment"
+            id="attachmentInput"
+            style="display: none"
+          />
+
+          <button type="button" class="btn btn-primary" id="voiceBtn">
+            🎤
+          </button>
+
+          <button type="button" class="btn btn-warning" id="recordBtn">
+            ⏺️
+          </button>
+
+          <button type="button" class="btn btn-danger" id="recordVideoBtn">
+            🎥
+          </button>
+        </div>
+      </form>
+
+      <div
+        id="emojiPicker"
+        style="
+          position: absolute;
+          bottom: 80px;
+          left: 10px;
+          display: none;
+          z-index: 1000;
+        "
+      ></div>
+
+      <!-- VIDEO RECORD PREVIEW (FLOATING) -->
+      <div
+        id="videoPreviewBox"
+        style="
+          position: fixed;
+          bottom: 90px;
+          right: 20px;
+          width: 220px;
+          background: black;
+          border-radius: 10px;
+          overflow: hidden;
+          display: none;
+          z-index: 999;
+        "
+      >
+        <video id="videoPreview" autoplay muted style="width: 100%"></video>
+      </div>
+
+      <!-- STATUS VIEWER -->
+      <div class="status-viewer" id="statusViewer">
+        <button type="button" onclick="closeStatus()" class="close-btn">
+          ✖
+        </button>
+
+        <div id="statusContent" style="text-align: center; color: white">
+          <img
+            id="statusViewImage"
+            style="max-width: 100%; border-radius: 10px"
+          />
+
+          <div
+            id="statusTime"
+            style="margin-top: 10px; font-size: 14px; opacity: 0.8"
+          ></div>
+        </div>
+      </div>
+
+      <!-- AUDIO CALL -->
+      <div id="audioCallModal" class="callModal">
+        <div class="callHeader">
+          📞 Audio Call
+          <span id="callStatus">Calling...</span>
+        </div>
+
+        <div class="callControls">
+          <button id="acceptAudioCall" class="callBtn acceptCall">✔</button>
+          <button id="endAudioCallBtn" class="callBtn endCall">✖</button>
+        </div>
+      </div>
+
+      <!-- VIDEO CALL -->
+      <div id="videoCallModal" class="callModal">
+        <div class="callHeader">
+          🎥 Video Call
+          <span id="callStatusVideo">Calling...</span>
+        </div>
+
+        <div class="callVideos">
+          <video id="remoteVideo" autoplay playsinline></video>
+
+          <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+
+        <div class="callControls">
+          <button id="acceptVideoCall" class="callBtn acceptCall">✔</button>
+          <button id="endVideoCallBtn" class="callBtn endCall">✖</button>
+        </div>
+      </div>
+    </div>
 
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
 
-      const statusCircle = document.getElementById("statusCircle");
-      const statusImage = document.getElementById("statusImage");
-      const statusFile = document.getElementById("statusFile");
-      const statusUploadBtn = document.getElementById("statusUploadBtn");
-      const statusViewer = document.getElementById("statusViewer");
-      const statusContent = document.getElementById("statusContent");
+        /* ==============================
+           GLOBAL VARIABLES
+        ============================== */
 
-      let backendStatus = {{ status|tojson if status else '[]' }};
-      let currentStatus = 0;
+        const statusCircle = document.getElementById("statusCircle");
+        const statusImage = document.getElementById("statusImage");
+        const statusFile = document.getElementById("statusFile");
+        const statusUploadBtn = document.getElementById("statusUploadBtn");
+        const statusViewer = document.getElementById("statusViewer");
+        const statusContent = document.getElementById("statusContent");
 
+        let backendStatus = {{ status|tojson if status else '[]' }};
+        let currentStatus = 0;
+        let statusTimer;
 
-      // STATUS RENDER
-      function renderStatus(){
 
-statusCircle.innerHTML="";
+        /* ==============================
+           STATUS RENDER
+        ============================== */
 
-if(!backendStatus || backendStatus.length===0){
+        function renderStatus() {
 
-statusImage.style.display="none";
-statusCircle.style.display="none";
-return;
+          statusCircle.innerHTML = "";
 
-}
+          if (!backendStatus || backendStatus.length === 0) {
+            statusImage.style.display = "none";
+            statusCircle.style.display = "none";
+            return;
+          }
 
-statusImage.style.display="block";
-statusCircle.style.display="block";
+          statusImage.style.display = "block";
+          statusCircle.style.display = "block";
 
-const latestStatus = backendStatus[0];
+          const latestStatus = backendStatus[0];
+          statusImage.src = "/static/status/" + latestStatus.file;
 
-statusImage.src="/static/status/"+latestStatus.file;
+          const radius = 30;
+          const cx = 35;
+          const cy = 35;
+          const total = backendStatus.length;
+          const gap = 4;
+          const circumference = 2 * Math.PI * radius;
 
-const radius=30;
-const cx=35,cy=35;
+          backendStatus.forEach((s, i) => {
 
-const total=backendStatus.length;
+            const segmentAngle = 360 / total;
+            const dash = ((segmentAngle - gap) / 360) * circumference;
+            const gapDash = circumference;
 
-const gap=4;
+            const circle = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "circle"
+            );
 
-const circumference=2*Math.PI*radius;
+            circle.setAttribute("r", radius);
+            circle.setAttribute("cx", cx);
+            circle.setAttribute("cy", cy);
+            circle.setAttribute("fill", "none");
+            circle.setAttribute("stroke", "#25d366");
+            circle.setAttribute("stroke-width", "4");
+            circle.setAttribute("stroke-dasharray", `${dash} ${gapDash}`);
+            circle.setAttribute(
+              "stroke-dashoffset",
+              `-${i * (circumference / total)}`
+            );
 
-backendStatus.forEach((s,i)=>{
+            statusCircle.appendChild(circle);
+          });
 
-const segmentAngle=360/total;
+          statusImage.onclick = () => {
+            currentStatus = 0;
+            openStatusViewer();
+          };
+        }
 
-const dash=((segmentAngle-gap)/360)*circumference;
 
-const gapDash=circumference;
+        /* ==============================
+           OPEN STATUS
+        ============================== */
 
-const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+        function openStatusViewer() {
 
-circle.setAttribute("r",radius);
-circle.setAttribute("cx",cx);
-circle.setAttribute("cy",cy);
-circle.setAttribute("fill","none");
-circle.setAttribute("stroke","#25d366");
-circle.setAttribute("stroke-width","4");
+          if (!backendStatus || backendStatus.length === 0) return;
 
-circle.setAttribute("stroke-dasharray",`${dash} ${gapDash}`);
+          currentStatus = 0;
+          statusViewer.style.display = "flex";
 
-circle.setAttribute("stroke-dashoffset",`-${i*(circumference/total)}`);
+          showStatus();
+        }
 
-statusCircle.appendChild(circle);
 
-});
+        /* ==============================
+           SHOW STATUS
+        ============================== */
 
-statusImage.onclick=()=>{
+        function showStatus() {
 
-currentStatus=0;
+          const s = backendStatus[currentStatus];
+          if (!s) return;
 
-openStatusViewer();
+          statusContent.innerHTML = "";
 
-};
+          // IMAGE
+          if (s.type === "image") {
 
-}
+            const img = document.createElement("img");
+            img.src = "/static/status/" + s.file;
 
+            img.style.width = "100%";
+            img.style.maxHeight = "70vh";
+            img.style.objectFit = "contain";
+            img.style.borderRadius = "10px";
 
+            statusContent.appendChild(img);
+          }
 
-// OPEN STATUS
+          // VIDEO
+          else if (s.type === "video") {
 
-function openStatusViewer(){
+            const video = document.createElement("video");
+            video.src = "/static/status/" + s.file;
+            video.autoplay = true;
+            video.controls = true;
 
-statusViewer.style.display="flex";
+            video.style.width = "100%";
+            video.style.maxHeight = "70vh";
+            video.style.objectFit = "contain";
+            video.style.borderRadius = "10px";
 
-showStatus();
+            statusContent.appendChild(video);
+          }
 
-}
+          // TIME
+          const timeDiv = document.createElement("div");
+          timeDiv.style.marginTop = "10px";
+          timeDiv.style.fontSize = "14px";
+          timeDiv.style.opacity = "0.8";
+          timeDiv.innerText = timeAgo(s.created_at);
 
+          statusContent.appendChild(timeDiv);
 
+          markViewed(currentStatus);
 
-// SHOW STATUS
+          statusTimer = setTimeout(() => {
+            nextStatus();
+          }, 5000);
+        }
 
-function showStatus(){
 
-statusContent.innerHTML="";
+        /* ==============================
+           TIME AGO
+        ============================== */
 
-const s=backendStatus[currentStatus];
+        function timeAgo(time) {
 
-if(!s) return;
+          const now = new Date();
+          const past = new Date(time.replace(" ", "T"));
 
-if(s.type==="image"){
+          const seconds = Math.floor((now - past) / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(seconds / 3600);
 
-const img=document.createElement("img");
+          if (seconds < 10) return "just now";
+          if (seconds < 60) return seconds + " sec ago";
+          if (minutes < 60) return minutes + " min ago";
+          if (hours < 24) return hours + " hours ago";
 
-img.src="/static/status/"+s.file;
+          return "1 day ago";
+        }
 
-statusContent.appendChild(img);
 
-}
+        /* ==============================
+           NEXT / PREVIOUS STATUS
+        ============================== */
 
-else if(s.type==="video"){
+        function nextStatus() {
 
-const vid=document.createElement("video");
+          clearTimeout(statusTimer);
+          currentStatus++;
 
-vid.src="/static/status/"+s.file;
+          if (currentStatus < backendStatus.length) {
+            showStatus();
+          } else {
+            closeStatus();
+          }
+        }
 
-vid.autoplay=true;
+        function prevStatus() {
 
-vid.controls=true;
+          clearTimeout(statusTimer);
+          currentStatus--;
 
-statusContent.appendChild(vid);
+          if (currentStatus >= 0) {
+            showStatus();
+          } else {
+            currentStatus = 0;
+          }
+        }
 
-}
 
+        /* ==============================
+           CLICK SKIP
+        ============================== */
 
-markViewed(currentStatus);
+        statusViewer.addEventListener("click", (e) => {
 
+          const width = statusViewer.clientWidth;
+          const clickX = e.clientX;
 
-// AUTO NEXT
+          if (clickX > width / 2) {
+            nextStatus();
+          } else {
+            prevStatus();
+          }
+        });
 
-statusTimer=setTimeout(()=>{
 
-nextStatus();
+        /* ==============================
+           CLOSE STATUS
+        ============================== */
 
-},5000);
+        function closeStatus() {
+          statusViewer.style.display = "none";
+          currentStatus = 0;
+        }
 
-}
 
+        /* ==============================
+           MARK VIEWED
+        ============================== */
 
+        function markViewed(index) {
 
-// NEXT STATUS
+          if (!statusCircle.children[index]) return;
 
-function nextStatus(){
-clearTimeout(statusTimer);
-currentStatus++;
-if(currentStatus<backendStatus.length){
-showStatus();
-}else{
-closeStatus();
-}
-}
+          statusCircle.children[index].setAttribute("stroke", "#ccc");
+        }
 
 
+        /* ==============================
+           STATUS UPLOAD
+        ============================== */
 
-// PREVIOUS STATUS
+        function uploadStatus(file) {
 
-function prevStatus(){
+          if (!file) return;
 
-clearTimeout(statusTimer);
+          const formData = new FormData();
+          formData.append("status", file);
 
-currentStatus--;
+          fetch("/upload_status", {
+            method: "POST",
+            body: formData
+          })
+            .then(res => res.json())
+            .then(data => {
 
-if(currentStatus>=0){
+              if (data.success) {
+                backendStatus.unshift(data.status);
+                renderStatus();
+                alert("Status uploaded successfully!");
+              } else {
+                alert("Upload failed");
+              }
+            })
+            .catch(() => alert("Upload error"));
+        }
 
-showStatus();
+        statusUploadBtn.addEventListener("click", function () {
 
-}else{
+          if (statusFile.files.length === 0) {
+            alert("Please select a file first!");
+            return;
+          }
 
-currentStatus=0;
+          uploadStatus(statusFile.files[0]);
+          statusFile.value = "";
+        });
 
-}
 
-}
+        /* ==============================
+           CHAT AUTO SCROLL
+        ============================== */
 
+        function scrollChatToBottom() {
+          const chatBox = document.getElementById("chatBox");
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
+        scrollChatToBottom();
 
-// CLICK SKIP
 
-statusViewer.addEventListener("click",(e)=>{
+        /* ==============================
+           VOICE TO TEXT
+        ============================== */
 
-const width=statusViewer.clientWidth;
+        const voiceBtn = document.getElementById("voiceBtn");
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
 
-const clickX=e.clientX;
+        if (SpeechRecognition) {
 
-if(clickX > width/2){
+          const recognition = new SpeechRecognition();
 
-nextStatus();
+          recognition.onresult = e => {
+            document.getElementById("messageInput").value =
+              e.results[0][0].transcript;
+          };
 
-}else{
+          voiceBtn.onclick = () => recognition.start();
+        }
 
-prevStatus();
 
-}
+        /* ==============================
+           AUDIO RECORD
+        ============================== */
 
-});
+        let mediaRecorder;
+        let audioChunks = [];
+        const recordBtn = document.getElementById("recordBtn");
 
+        function recordAudio() {
 
+          if (recordBtn.dataset.recording) {
 
-// CLOSE STATUS
+            mediaRecorder.stop();
+            recordBtn.dataset.recording = "";
 
-function closeStatus(){
+          } else {
 
-statusViewer.style.display="none";
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then(stream => {
 
-currentStatus=0;
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
 
-}
+                audioChunks = [];
 
+                mediaRecorder.ondataavailable = e =>
+                  audioChunks.push(e.data);
 
+                mediaRecorder.onstop = () => {
 
-// MARK VIEWED
+                  const blob = new Blob(audioChunks, { type: "audio/webm" });
 
-function markViewed(index){
+                  const formData = new FormData();
+                  formData.append("audio", blob, "voice.webm");
 
-if(!statusCircle.children[index]) return;
+                  fetch("", {
+                    method: "POST",
+                    body: formData
+                  }).then(() => location.reload());
+                };
 
-statusCircle.children[index].setAttribute("stroke","#ccc");
+                recordBtn.dataset.recording = true;
+              });
+          }
+        }
 
-}
+        recordBtn.onclick = recordAudio;
 
 
-      // UPLOAD STATUS
-      function uploadStatus(file){
+        /* ==============================
+           VIDEO RECORD
+        ============================== */
 
-      if(!file) return;
+        let videoRecorder;
+        let videoChunks = [];
+        const recordVideoBtn = document.getElementById("recordVideoBtn");
+        const videoPreview = document.getElementById("videoPreview");
+        const videoPreviewBox = document.getElementById("videoPreviewBox");
 
-      const formData=new FormData();
+        let stream;
 
-      formData.append("status",file);
+        function recordVideo() {
 
-      fetch("/upload_status",{method:"POST",body:formData})
+          if (recordVideoBtn.dataset.recording) {
 
-      .then(res=>res.json())
+            videoRecorder.stop();
+            stream.getTracks().forEach(track => track.stop());
 
-      .then(data=>{
+            videoPreviewBox.style.display = "none";
+            recordVideoBtn.dataset.recording = "";
 
-      if(data.success){
+          } else {
 
-      backendStatus.unshift(data.status);
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+              .then(s => {
 
-      renderStatus();
+                stream = s;
 
-      alert("Status uploaded successfully!");
+                videoPreview.srcObject = stream;
+                videoPreviewBox.style.display = "block";
 
-      }
+                videoRecorder = new MediaRecorder(stream);
+                videoRecorder.start();
 
-      else{
+                videoChunks = [];
 
-      alert("Upload failed");
+                videoRecorder.ondataavailable = e =>
+                  videoChunks.push(e.data);
 
-      }
+                videoRecorder.onstop = () => {
 
-      })
+                  const blob = new Blob(videoChunks, { type: "video/webm" });
 
-      .catch(err=>alert("Upload error"));
+                  const formData = new FormData();
+                  formData.append("video", blob, "video.webm");
 
-      }
+                  fetch("", {
+                    method: "POST",
+                    body: formData
+                  }).then(() => location.reload());
+                };
 
+                recordVideoBtn.dataset.recording = true;
+              });
+          }
+        }
 
-      statusUploadBtn.addEventListener("click",function(){
+        recordVideoBtn.onclick = recordVideo;
 
-      if(statusFile.files.length===0){
 
-      alert("Please select a file first!");
+        /* ==============================
+           INITIALIZE
+        ============================== */
 
-      return;
-
-      }
-
-      uploadStatus(statusFile.files[0]);
-
-      statusFile.value="";
+        renderStatus();
 
       });
+    </script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      const socket = io();
 
+      let localStream;
+      let peerConnection;
 
-      // CHAT AUTO SCROLL
-      function scrollChatToBottom(){
+      const dialTone = document.getElementById("dialTone");
 
-      const chatBox=document.getElementById("chatBox");
+      const ringtone = new Audio(
+        "https://www.soundjay.com/telephone/sounds/telephone-ring-01a.mp3",
+      );
 
-      chatBox.scrollTop=chatBox.scrollHeight;
+      ringtone.loop = true;
 
-      }
-
-      scrollChatToBottom();
-
-
-      // VOICE TO TEXT
-      const voiceBtn=document.getElementById("voiceBtn");
-
-      const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-
-      if(SpeechRecognition){
-
-      const recognition=new SpeechRecognition();
-
-      recognition.onresult=e=>{
-
-      document.getElementById("messageInput").value=e.results[0][0].transcript;
-
+      const servers = {
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
       };
 
-      voiceBtn.onclick=()=>recognition.start();
+      // OPEN MODAL
 
+      function showCallModal(id) {
+        const modal = document.getElementById(id);
+
+        if (modal) {
+          modal.style.display = "flex";
+        }
       }
 
+      // CLOSE MODAL
 
-      // AUDIO RECORD
-      let mediaRecorder,audioChunks=[];
+      function closeCallModal(id) {
+        const modal = document.getElementById(id);
 
-      const recordBtn=document.getElementById("recordBtn");
-
-      function recordAudio(){
-
-      if(recordBtn.dataset.recording){
-
-      mediaRecorder.stop();
-
-      recordBtn.dataset.recording="";
-
+        if (modal) {
+          modal.style.display = "none";
+        }
       }
 
-      else{
+      // START AUDIO CALL
 
-      navigator.mediaDevices.getUserMedia({audio:true})
+      async function startAudioCall() {
+        showCallModal("audioCallModal");
 
-      .then(stream=>{
+        document.getElementById("callStatus").innerText = "Calling...";
 
-      mediaRecorder=new MediaRecorder(stream);
+        dialTone.play();
 
-      mediaRecorder.start();
+        localStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
 
-      audioChunks=[];
+        createPeer();
 
-      mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+        socket.emit("start_audio_call");
+      }
 
-      mediaRecorder.onstop=()=>{
+      // START VIDEO CALL
 
-      const blob=new Blob(audioChunks,{type:"audio/webm"});
+      async function startVideoCall() {
+        showCallModal("videoCallModal");
 
-      const formData=new FormData();
+        document.getElementById("callStatusVideo").innerText = "Calling...";
 
-      formData.append("audio",blob,"voice.webm");
+        dialTone.play();
 
-      fetch("",{method:"POST",body:formData})
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
 
-      .then(()=>location.reload());
+        document.getElementById("localVideo").srcObject = localStream;
 
-      };
+        createPeer();
 
-      recordBtn.dataset.recording=true;
+        socket.emit("start_video_call");
+      }
 
+      // CREATE WEBRTC
+
+      function createPeer() {
+        peerConnection = new RTCPeerConnection(servers);
+
+        localStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        peerConnection.ontrack = (event) => {
+          const remoteVideo = document.getElementById("remoteVideo");
+
+          if (remoteVideo) {
+            remoteVideo.srcObject = event.streams[0];
+            remoteVideo.play();
+          }
+        };
+
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            socket.emit("webrtc_ice", {
+              candidate: event.candidate,
+            });
+          }
+        };
+
+        peerConnection.createOffer().then((offer) => {
+          peerConnection.setLocalDescription(offer);
+
+          socket.emit("webrtc_offer", { offer: offer });
+        });
+      }
+
+      // INCOMING AUDIO CALL
+
+      socket.on("incoming_audio_call", function () {
+        dialTone.pause();
+        dialTone.currentTime = 0;
+
+        ringtone.play();
+
+        showCallModal("audioCallModal");
+
+        document.getElementById("callStatus").innerText = "Incoming Call";
       });
 
+      // INCOMING VIDEO CALL
+
+      socket.on("incoming_video_call", function () {
+        dialTone.pause();
+        dialTone.currentTime = 0;
+
+        ringtone.play();
+
+        showCallModal("videoCallModal");
+
+        document.getElementById("callStatusVideo").innerText =
+          "Incoming Video Call";
+      });
+
+      // ACCEPT AUDIO CALL
+
+      document.getElementById("acceptAudioCall").onclick = async function () {
+        ringtone.pause();
+        dialTone.pause();
+
+        ringtone.currentTime = 0;
+        dialTone.currentTime = 0;
+
+        localStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+        createPeer();
+
+        document.getElementById("callStatus").innerText = "Connected";
+      };
+
+      // ACCEPT VIDEO CALL
+
+      document.getElementById("acceptVideoCall").onclick = async function () {
+        ringtone.pause();
+        dialTone.pause();
+
+        ringtone.currentTime = 0;
+        dialTone.currentTime = 0;
+
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+
+        document.getElementById("localVideo").srcObject = localStream;
+
+        createPeer();
+
+        document.getElementById("callStatusVideo").innerText = "Connected";
+      };
+
+      // RECEIVE OFFER
+
+      socket.on("webrtc_offer", async (data) => {
+        if (!peerConnection) {
+          peerConnection = new RTCPeerConnection(servers);
+        }
+
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(data.offer),
+        );
+
+        const answer = await peerConnection.createAnswer();
+
+        await peerConnection.setLocalDescription(answer);
+
+        socket.emit("webrtc_answer", { answer: answer });
+      });
+
+      // RECEIVE ANSWER
+
+      socket.on("webrtc_answer", async (data) => {
+        if (peerConnection) {
+          await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(data.answer),
+          );
+        }
+      });
+
+      // RECEIVE ICE
+
+      socket.on("webrtc_ice", async (data) => {
+        if (peerConnection) {
+          await peerConnection.addIceCandidate(
+            new RTCIceCandidate(data.candidate),
+          );
+        }
+      });
+
+      // STOP CALL
+
+      function stopCall() {
+        dialTone.pause();
+        ringtone.pause();
+
+        dialTone.currentTime = 0;
+        ringtone.currentTime = 0;
+
+        if (localStream) {
+          localStream.getTracks().forEach((track) => track.stop());
+        }
+
+        if (peerConnection) {
+          peerConnection.close();
+          peerConnection = null;
+        }
+
+        closeCallModal("audioCallModal");
+        closeCallModal("videoCallModal");
       }
 
-      }
-
-      recordBtn.onclick=recordAudio;
-
-
-      // VIDEO RECORD
-      let videoRecorder, videoChunks=[];
-const recordVideoBtn=document.getElementById("recordVideoBtn");
-const videoPreview=document.getElementById("videoPreview");
-const videoPreviewBox=document.getElementById("videoPreviewBox");
-
-let stream;
-
-function recordVideo(){
-
-if(recordVideoBtn.dataset.recording){
-
-videoRecorder.stop();
-stream.getTracks().forEach(track=>track.stop());
-
-videoPreviewBox.style.display="none";
-
-recordVideoBtn.dataset.recording="";
-
-}
-
-else{
-
-navigator.mediaDevices.getUserMedia({video:true,audio:true})
-.then(s=>{
-
-stream=s;
-
-videoPreview.srcObject=stream;
-
-videoPreviewBox.style.display="block";
-
-videoRecorder=new MediaRecorder(stream);
-
-videoRecorder.start();
-
-videoChunks=[];
-
-videoRecorder.ondataavailable=e=>videoChunks.push(e.data);
-
-videoRecorder.onstop=()=>{
-
-const blob=new Blob(videoChunks,{type:"video/webm"});
-
-const formData=new FormData();
-
-formData.append("video",blob,"video.webm");
-
-fetch("",{method:"POST",body:formData})
-.then(()=>location.reload());
-
-};
-
-recordVideoBtn.dataset.recording=true;
-
-});
-
-}
-
-}
-
-recordVideoBtn.onclick=recordVideo;
-
-
-      // ATTACHMENT PREVIEW (WHATSAPP STYLE)
-      const attachmentInput=document.getElementById("attachmentInput");
-
-      const previewBox=document.getElementById("filePreview");
-
-      const previewContent=document.getElementById("previewContent");
-
-      if(attachmentInput){
-
-      attachmentInput.onchange=function(){
-
-      const file=this.files[0];
-
-      if(!file) return;
-
-      previewBox.style.display="block";
-
-      const ext=file.name.split('.').pop().toLowerCase();
-
-      previewContent.innerHTML="";
-
-
-      // IMAGE
-      if(["jpg","jpeg","png","gif","webp"].includes(ext)){
-
-      const img=document.createElement("img");
-
-      img.src=URL.createObjectURL(file);
-
-      img.style.maxWidth="200px";
-
-      img.style.borderRadius="8px";
-
-      previewContent.appendChild(img);
-
-      }
-
-
-      // VIDEO
-      else if(["mp4","webm"].includes(ext)){
-
-      const video=document.createElement("video");
-
-      video.src=URL.createObjectURL(file);
-
-      video.controls=true;
-
-      video.style.maxWidth="200px";
-
-      previewContent.appendChild(video);
-
-      }
-
-
-      // OTHER FILE
-      else{
-
-      previewContent.innerHTML="📎 "+file.name;
-
-      }
-
-      }
-
-      }
-
-
-      // REMOVE ATTACHMENT
-      function removeAttachment(){
-
-      attachmentInput.value="";
-
-      previewBox.style.display="none";
-
-      previewContent.innerHTML="";
-
-      }
-
-
-      renderStatus();
+      document.getElementById("endAudioCallBtn").onclick = stopCall;
+      document.getElementById("endVideoCallBtn").onclick = stopCall;
     </script>
 
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 
-
-<script>
-
-const socket = io();
-
-let localStream;
-let peerConnection;
-
-const dialTone = document.getElementById("dialTone");
-
-const ringtone = new Audio(
-"https://www.soundjay.com/telephone/sounds/telephone-ring-01a.mp3"
-);
-
-ringtone.loop = true;
-
-const servers = {
-iceServers:[
-{urls:"stun:stun.l.google.com:19302"}
-]
-};
-
-
-// OPEN MODAL
-
-function showCallModal(id){
-
-const modal = document.getElementById(id);
-
-if(modal){
-modal.style.display="flex";
-}
-
-}
-
-
-// CLOSE MODAL
-
-function closeCallModal(id){
-
-const modal = document.getElementById(id);
-
-if(modal){
-modal.style.display="none";
-}
-
-}
-
-
-// START AUDIO CALL
-
-async function startAudioCall(){
-
-showCallModal("audioCallModal");
-
-document.getElementById("callStatus").innerText="Calling...";
-
-dialTone.play();
-
-localStream = await navigator.mediaDevices.getUserMedia({
-audio:true
-});
-
-createPeer();
-
-socket.emit("start_audio_call");
-
-}
-
-
-// START VIDEO CALL
-
-async function startVideoCall(){
-
-showCallModal("videoCallModal");
-
-document.getElementById("callStatusVideo").innerText="Calling...";
-
-dialTone.play();
-
-localStream = await navigator.mediaDevices.getUserMedia({
-video:true,
-audio:true
-});
-
-document.getElementById("localVideo").srcObject = localStream;
-
-createPeer();
-
-socket.emit("start_video_call");
-
-}
-
-
-// CREATE WEBRTC
-
-function createPeer(){
-
-peerConnection = new RTCPeerConnection(servers);
-
-localStream.getTracks().forEach(track=>{
-peerConnection.addTrack(track,localStream);
-});
-
-
-peerConnection.ontrack = (event)=>{
-
-const remoteVideo = document.getElementById("remoteVideo");
-
-if(remoteVideo){
-remoteVideo.srcObject = event.streams[0];
-remoteVideo.play();
-}
-
-};
-
-
-peerConnection.onicecandidate = (event)=>{
-
-if(event.candidate){
-
-socket.emit("webrtc_ice",{
-candidate:event.candidate
-});
-
-}
-
-};
-
-
-peerConnection.createOffer().then(offer=>{
-
-peerConnection.setLocalDescription(offer);
-
-socket.emit("webrtc_offer",{offer:offer});
-
-});
-
-}
-
-
-
-// INCOMING AUDIO CALL
-
-socket.on("incoming_audio_call",function(){
-
-dialTone.pause();
-dialTone.currentTime = 0;
-
-ringtone.play();
-
-showCallModal("audioCallModal");
-
-document.getElementById("callStatus").innerText="Incoming Call";
-
-});
-
-
-
-// INCOMING VIDEO CALL
-
-socket.on("incoming_video_call",function(){
-
-dialTone.pause();
-dialTone.currentTime = 0;
-
-ringtone.play();
-
-showCallModal("videoCallModal");
-
-document.getElementById("callStatusVideo").innerText="Incoming Video Call";
-
-});
-
-
-
-
-// ACCEPT AUDIO CALL
-
-document.getElementById("acceptAudioCall").onclick = async function(){
-
-ringtone.pause();
-dialTone.pause();
-
-ringtone.currentTime = 0;
-dialTone.currentTime = 0;
-
-localStream = await navigator.mediaDevices.getUserMedia({
-audio:true
-});
-
-createPeer();
-
-document.getElementById("callStatus").innerText="Connected";
-
-};
-
-
-
-// ACCEPT VIDEO CALL
-
-document.getElementById("acceptVideoCall").onclick = async function(){
-
-ringtone.pause();
-dialTone.pause();
-
-ringtone.currentTime = 0;
-dialTone.currentTime = 0;
-
-localStream = await navigator.mediaDevices.getUserMedia({
-video:true,
-audio:true
-});
-
-document.getElementById("localVideo").srcObject = localStream;
-
-createPeer();
-
-document.getElementById("callStatusVideo").innerText="Connected";
-
-};
-
-
-
-
-// RECEIVE OFFER
-
-socket.on("webrtc_offer", async (data)=>{
-
-if(!peerConnection){
-
-peerConnection = new RTCPeerConnection(servers);
-
-}
-
-await peerConnection.setRemoteDescription(
-new RTCSessionDescription(data.offer)
-);
-
-const answer = await peerConnection.createAnswer();
-
-await peerConnection.setLocalDescription(answer);
-
-socket.emit("webrtc_answer",{answer:answer});
-
-});
-
-
-
-
-// RECEIVE ANSWER
-
-socket.on("webrtc_answer", async (data)=>{
-
-if(peerConnection){
-
-await peerConnection.setRemoteDescription(
-new RTCSessionDescription(data.answer)
-);
-
-}
-
-});
-
-
-
-
-// RECEIVE ICE
-
-socket.on("webrtc_ice", async (data)=>{
-
-if(peerConnection){
-
-await peerConnection.addIceCandidate(
-new RTCIceCandidate(data.candidate)
-);
-
-}
-
-});
-
-
-
-
-// STOP CALL
-
-function stopCall(){
-
-dialTone.pause();
-ringtone.pause();
-
-dialTone.currentTime = 0;
-ringtone.currentTime = 0;
-
-if(localStream){
-localStream.getTracks().forEach(track=>track.stop());
-}
-
-if(peerConnection){
-peerConnection.close();
-peerConnection = null;
-}
-
-closeCallModal("audioCallModal");
-closeCallModal("videoCallModal");
-
-}
-
-
-
-document.getElementById("endAudioCallBtn").onclick = stopCall;
-document.getElementById("endVideoCallBtn").onclick = stopCall;
-
-</script>
-
+    <script>
+      const emojiBtn = document.getElementById("emojiBtn");
+      const emojiPicker = document.getElementById("emojiPicker");
+      const messageInput = document.getElementById("messageInput");
+
+      if (emojiBtn) {
+        const picker = new EmojiMart.Picker({
+          onEmojiSelect: (emoji) => {
+            messageInput.value += emoji.native;
+          },
+        });
+
+        emojiPicker.appendChild(picker);
+
+        emojiBtn.onclick = () => {
+          emojiPicker.style.display =
+            emojiPicker.style.display === "none" ? "block" : "none";
+        };
+      }
+    </script>
+    <script>
+      let replyId = null;
+
+      const replyPreview = document.getElementById("replyPreview");
+      const replyPreviewText = document.getElementById("replyPreviewText");
+      const replyIdInput = document.getElementById("replyId");
+
+      document.querySelectorAll(".replyBtn").forEach((btn) => {
+        btn.onclick = function () {
+          replyId = this.dataset.id;
+
+          replyPreviewText.innerText = this.dataset.text;
+
+          replyPreview.style.display = "block";
+
+          replyIdInput.value = replyId;
+        };
+      });
+
+      function cancelReply() {
+        replyPreview.style.display = "none";
+
+        replyPreviewText.innerText = "";
+
+        replyIdInput.value = "";
+
+        replyId = null;
+      }
+
+      // SCROLL TO ORIGINAL MESSAGE
+      function scrollToMsg(id) {
+        const msg = document.getElementById("msg" + id);
+
+        if (msg) {
+          msg.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          msg.style.background = "#ffffcc";
+
+          setTimeout(() => {
+            msg.style.background = "";
+          }, 2000);
+        }
+      }
+
+      function reactMessage(msgId, emoji) {
+        fetch("/react_message", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            message_id: msgId,
+            emoji: emoji,
+          }),
+        })
+          .then((res) => res.json())
+
+          .then((data) => {
+            if (data.success) {
+              const box = document.getElementById("reaction" + msgId);
+
+              box.innerHTML = "";
+
+              if (data.reaction) {
+                const span = document.createElement("span");
+
+                span.className = "reaction";
+
+                span.innerText = data.reaction;
+
+                box.appendChild(span);
+              }
+            }
+          });
+      }
+    </script>
+    <script>
+      document.addEventListener("click", function (e) {
+        // REACT BUTTON CLICK
+        if (e.target.classList.contains("reactBtn")) {
+          const id = e.target.dataset.id;
+          const panel = document.getElementById("panel" + id);
+
+          // toggle panel
+          if (panel.style.display === "block") {
+            panel.style.display = "none";
+            return;
+          }
+
+          // close other panels
+          document
+            .querySelectorAll(".reactionPanel")
+            .forEach((p) => (p.style.display = "none"));
+
+          // empty panel
+          panel.innerHTML = "";
+
+          // set position near button
+          const rect = e.target.getBoundingClientRect();
+          panel.style.top = window.scrollY + 80 + "px"; // above button
+          panel.style.left = window.scrollX + "px";
+          panel.style.display = "block";
+
+          // create picker
+          const picker = new EmojiMart.Picker({
+            onEmojiSelect: (emoji) => {
+              addReaction(id, emoji.native);
+              panel.style.display = "none";
+            },
+            theme: "light",
+            showPreview: false,
+            showSkinTones: false,
+          });
+
+          panel.appendChild(picker);
+        } else {
+          // click outside -> hide all panels
+          document
+            .querySelectorAll(".reactionPanel")
+            .forEach((p) => (p.style.display = "none"));
+        }
+      });
+
+      // Add reaction function (WhatsApp style multiple reactions)
+      function addReaction(msgId, emoji) {
+        fetch("/react_message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message_id: msgId, emoji: emoji }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              const box = document.getElementById("reaction" + msgId);
+              box.innerHTML = ""; // clear existing reaction(s)
+
+              // add new emoji
+              if (data.reaction) {
+                const span = document.createElement("span");
+                span.className = "reaction";
+                span.innerText = data.reaction;
+                box.appendChild(span);
+              }
+            }
+          });
+      }
+      document.querySelectorAll(".moreBtn").forEach((btn) => {
+        btn.onclick = function (e) {
+          e.stopPropagation(); // prevent document click
+          const menu = this.nextElementSibling;
+          document.querySelectorAll(".moreMenu").forEach((m) => {
+            if (m !== menu) m.style.display = "none";
+          });
+          menu.style.display =
+            menu.style.display === "block" ? "none" : "block";
+        };
+      });
+
+      // hide menu on outside click
+      document.addEventListener("click", () => {
+        document
+          .querySelectorAll(".moreMenu")
+          .forEach((m) => (m.style.display = "none"));
+      });
+
+      // ----------------------------
+      // DELETE MESSAGE FUNCTION
+      // ----------------------------
+
+      document.querySelectorAll(".deleteMenuBtn").forEach((btn) => {
+        btn.onclick = function (e) {
+          e.stopPropagation(); // prevent menu click from bubbling
+          const id = this.dataset.id;
+
+          fetch("/delete_message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message_id: id }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                const msgDiv = document.getElementById("msg" + id);
+
+                // ✅ Mark message as deleted
+                msgDiv.classList.add("deleted");
+
+                // ✅ Hide message content & actions
+                const content = msgDiv.querySelector(".msgContent");
+                const actions = msgDiv.querySelector(".msgActions");
+                if (content) content.style.display = "none";
+                if (actions) actions.style.display = "none";
+
+                // ✅ Show deletedText only (once)
+                let deletedText = msgDiv.querySelector(".deletedText");
+                if (!deletedText) {
+                  deletedText = document.createElement("div");
+                  deletedText.className = "deletedText";
+                  deletedText.innerText = "This message was deleted";
+                  msgDiv.appendChild(deletedText);
+                }
+              }
+            })
+            .catch((err) => console.error("Delete error:", err));
+        };
+      });
+
+      // ----------------------------
+      // REPLY MESSAGE FUNCTION
+      // ----------------------------
+      document.querySelectorAll(".replyMenuBtn").forEach((btn) => {
+        btn.onclick = function (e) {
+          e.stopPropagation(); // prevent menu click from bubbling
+          const id = this.dataset.id;
+          const text = this.dataset.text;
+
+          // Show reply preview
+          const replyPreview = document.getElementById("replyPreview");
+          const replyPreviewText = document.getElementById("replyPreviewText");
+          const replyIdInput = document.getElementById("replyId");
+
+          replyPreview.style.display = "block";
+          replyPreviewText.innerText = text;
+          replyIdInput.value = id;
+        };
+      });
+
+      // ----------------------------
+      // CANCEL REPLY FUNCTION
+      // ----------------------------
+      function cancelReply() {
+        const replyPreview = document.getElementById("replyPreview");
+        const replyPreviewText = document.getElementById("replyPreviewText");
+        const replyIdInput = document.getElementById("replyId");
+
+        replyPreview.style.display = "none";
+        replyPreviewText.innerText = "";
+        replyIdInput.value = "";
+      }
+    </script>
+    <script>
+      const attachmentInput = document.getElementById("attachmentInput");
+      const filePreview = document.getElementById("filePreview");
+      const previewContent = document.getElementById("previewContent");
+
+      if (attachmentInput) {
+        attachmentInput.addEventListener("change", function () {
+          const file = this.files[0];
+
+          if (!file) return;
+
+          const fileURL = URL.createObjectURL(file);
+
+          previewContent.innerHTML = "";
+
+          // IMAGE
+          if (file.type.startsWith("image")) {
+            previewContent.innerHTML = `
+        <img src="${fileURL}" style="max-width:200px;border-radius:8px">
+        `;
+          }
+
+          // VIDEO
+          else if (file.type.startsWith("video")) {
+            previewContent.innerHTML = `
+        <video controls style="max-width:200px;border-radius:8px">
+            <source src="${fileURL}">
+        </video>
+        `;
+          }
+
+          // AUDIO
+          else if (file.type.startsWith("audio")) {
+            previewContent.innerHTML = `
+        <audio controls>
+            <source src="${fileURL}">
+        </audio>
+        `;
+          }
+
+          // OTHER FILE
+          else {
+            previewContent.innerHTML = `📎 ${file.name}`;
+          }
+          filePreview.style.display = "block";
+        });
+      }
+
+      // REMOVE ATTACHMENT
+      function removeAttachment() {
+        attachmentInput.value = "";
+        previewContent.innerHTML = "";
+        filePreview.style.display = "none";
+      }
+    </script>
   </body>
 </html>
