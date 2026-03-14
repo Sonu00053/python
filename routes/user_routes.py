@@ -112,3 +112,8 @@ def react_message():
 @login_required()
 def delete_message():
     return UserController.delete_message()
+
+@user_bp.route("/upload_profile", methods=["POST"])
+@login_required()
+def upload_profile():
+    return UserController.upload_profile()

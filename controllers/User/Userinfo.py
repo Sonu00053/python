@@ -18,11 +18,15 @@ from models.dynamic_model import UserModel
 from helpers.message_helper import success, error
 from helpers.form_master import FormHelper
 from werkzeug.utils import secure_filename
+PROFILE_FOLDER = "static/profile"
+os.makedirs(PROFILE_FOLDER, exist_ok=True)
+PROFILE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 
 
 class UserController:
     UPLOAD_FOLDER = "static/uploads"
     STATUS_FOLDER = "static/status"
+    # PROFILE_FOLDER = "static/profile"
     ALLOWED_EXTENSIONS = [
         "webm",
         "mp4",
@@ -35,6 +39,57 @@ class UserController:
     ]
 
     STATUS_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "mp4", "mov", "avi", "webm"}
+   
+
+    @staticmethod
+    def allowed_fileprofile(filename):
+        return "." in filename and filename.rsplit(".", 1)[1].lower() in PROFILE_EXTENSIONS
+
+    @staticmethod
+    def upload_profile():
+        if "user_id" not in session:
+            return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+        if "profile" not in request.files:
+            return jsonify({"success": False, "message": "No file provided"}), 400
+
+        file = request.files["profile"]
+
+        if file.filename == "":
+            return jsonify({"success": False, "message": "No file selected"}), 400
+
+        if file and UserController.allowed_fileprofile(file.filename):
+
+            # 🔹 get old profile from DB
+            user = UserModel.get_single_record(
+                "users", {"user_id": session["user_id"]}, "profile"
+            )
+
+            if user and user.get("profile"):
+                old_path = os.path.join(PROFILE_FOLDER, user["profile"])
+
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+
+            # 🔹 save new profile
+            filename = secure_filename(
+                f"{session['user_id']}_{int(datetime.now().timestamp())}_{file.filename}"
+            )
+
+            file_path = os.path.join(PROFILE_FOLDER, filename)
+            file.save(file_path)
+
+            # 🔹 update DB
+            update_data = {"profile": filename}
+            UserModel.update_record(
+                "users", {"user_id": session["user_id"]}, update_data
+            )
+
+            profile_url = url_for("static", filename=f"profile/{filename}")
+
+            return jsonify({"success": True, "profile_url": profile_url})
+
+        return jsonify({"success": False, "message": "File type not allowed"}), 400
 
     @staticmethod
     def register_user(data):
@@ -243,7 +298,9 @@ class UserController:
                 msg_type = "video"
 
             # ---------- AUDIO ----------
-            elif audio and audio.filename and UserController.allowed_file(audio.filename):
+            elif (
+                audio and audio.filename and UserController.allowed_file(audio.filename)
+            ):
 
                 filename = secure_filename(
                     f"voice_{sender_id}_{int(datetime.now().timestamp())}.webm"
@@ -254,7 +311,11 @@ class UserController:
                 msg_type = "audio"
 
             # ---------- ATTACHMENT ----------
-            elif attachment and attachment.filename and UserController.allowed_file(attachment.filename):
+            elif (
+                attachment
+                and attachment.filename
+                and UserController.allowed_file(attachment.filename)
+            ):
 
                 ext = attachment.filename.rsplit(".", 1)[1].lower()
 
@@ -326,6 +387,7 @@ class UserController:
         # ---------- GET MESSAGES ----------
         chat = UserModel.get_single_record("messages", {"user_id": sender_id}, "*")
         status = UserModel.get_single_record("status", {"user_id": sender_id}, "*")
+        userInfo = UserModel.get_single_record("users", {"user_id": sender_id}, "*")
 
         messages = []
 
@@ -347,9 +409,13 @@ class UserController:
                     if m.get("reply"):
                         reply_msg = next(
                             (x for x in messages if str(x["id"]) == str(m["reply"])),
-                            None
+                            None,
                         )
-                        m["reply_text"] = reply_msg.get("message") or reply_msg.get("text") or "" if reply_msg else "Message not found"
+                        m["reply_text"] = (
+                            reply_msg.get("message") or reply_msg.get("text") or ""
+                            if reply_msg
+                            else "Message not found"
+                        )
                     else:
                         m["reply_text"] = None
 
@@ -371,9 +437,8 @@ class UserController:
             messages=messages,
             user=chat,
             status=status_messages,
+            userInfo=userInfo,
         )
-
-
 
     @staticmethod
     def status_allowed_file(filename):
@@ -485,7 +550,7 @@ class UserController:
                 UserModel.update_record(
                     "status", {"id": record["id"]}, {"message": updated_json}
                 )
-                
+
     @staticmethod
     def react_message():
         data = request.json
@@ -503,7 +568,7 @@ class UserController:
             if m["id"] == msg_id:
                 if "reactions" not in m or not m["reactions"]:
                     m["reactions"] = []
-                
+
                 # check if user already reacted
                 user_found = False
                 for r in m["reactions"]:
@@ -519,12 +584,11 @@ class UserController:
         UserModel.update_record(
             "messages",
             {"user_id": sender_id},
-            {"message": json.dumps(messages, indent=4)}
+            {"message": json.dumps(messages, indent=4)},
         )
 
         return jsonify(success=True, reaction=emoji)
-    
-    
+
     @staticmethod
     def delete_message():
         data = request.json
@@ -545,13 +609,13 @@ class UserController:
             if m["id"] == msg_id:
                 m["status"] = 1  # deleted
                 m["message"] = ""  # remove content if you want
-                m["text"] = "" 
+                m["text"] = ""
                 break
 
         UserModel.update_record(
             "messages",
             {"user_id": sender_id},
-            {"message": json.dumps(messages, indent=4)}
+            {"message": json.dumps(messages, indent=4)},
         )
 
         return jsonify(success=True)

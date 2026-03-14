@@ -27,6 +27,8 @@
       type="audio/mp3"
     />
   </audio>
+  
+  
   <body>
     <!-- STATUS SIDEBAR -->
     <div class="sidebar">
@@ -53,10 +55,39 @@
     <!-- CHAT CONTAINER -->
     <div class="chat-container shadow">
       <!-- HEADER -->
-      <div class="chat-header">
-        {{ user.sender_id if user else 'Chat' }}
+      <div
+        class="chat-header d-flex align-items-center justify-content-between p-2"
+      >
+        <!-- PROFILE + NAME -->
+        <div class="d-flex align-items-center">
+          <div style="position: relative">
+            <img
+              id="profileImg"
+              src="{{ url_for('static', filename='profile/' + (userInfo.profile if user and userInfo.profile else 'default.png')) }}"
+              alt="Profile"
+              style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                cursor: pointer;
+              "
+              onclick="viewProfile()"
+            />
+            <!-- HIDDEN FILE INPUT FOR UPLOAD -->
+            <input
+              type="file"
+              id="profileInput"
+              style="display: none"
+              accept="image/*"
+            />
+          </div>
+          <span style="margin-left: 10px; font-weight: bold"
+            >{{ user.sender_id if user else 'Chat' }}</span
+          >
+        </div>
 
-        <div style="float: right">
+        <!-- CALL BUTTONS -->
+        <div>
           <button onclick="startAudioCall()" class="btn btn-light btn-sm">
             📞
           </button>
@@ -64,6 +95,15 @@
             🎥
           </button>
         </div>
+
+        <!-- HIDDEN FILE INPUT -->
+        <input
+          type="file"
+          id="profileInput"
+          style="display: none"
+          accept="image/*"
+          onchange="uploadProfile(this.files[0])"
+        />
       </div>
 
       <!-- CHAT MESSAGES -->
@@ -106,6 +146,7 @@
             <img
               src="{{ url_for('static', filename='uploads/' ~ msg.message) }}"
               style="max-width: 250px; border-radius: 8px"
+              class="chat-image"
             />
 
             {% elif ext in ['mp4','webm'] %}
@@ -166,11 +207,8 @@
           </div>
 
           {% else %}
-
           <div class="deletedTextWrapper">
             <div class="deletedText"><i>This message was deleted</i></div>
-
-            <!-- TIME + ICON -->
             <div class="deletedMsgInfo">
               <span class="msgTime">{{ msg.time }}</span>
             </div>
@@ -223,8 +261,54 @@
       </div>
 
       <form method="POST" enctype="multipart/form-data" id="chatForm">
+        <!-- RECORDING BAR -->
+        <div
+          id="recordingBar"
+          style="
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: #111;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px;
+          "
+        >
+          <span id="recordTime">0:00</span>
+
+          <canvas id="waveCanvas" width="200" height="40"></canvas>
+
+          <button
+            type="button"
+            id="sendAudio"
+            class="btn btn-success btn-sm"
+            style="display: none"
+          >
+            Send
+          </button>
+
+          <button
+            type="button"
+            id="deleteAudio"
+            class="btn btn-danger btn-sm"
+            style="display: none"
+          >
+            Delete
+          </button>
+
+          <button
+            type="button"
+            id="cancelRecord"
+            class="btn btn-warning btn-sm"
+          >
+            Cancel
+          </button>
+        </div>
+
         <div class="chat-input">
           <button type="button" id="emojiBtn" class="btn btn-light">😊</button>
+
           <input type="hidden" name="reply_id" id="replyId" />
 
           <input
@@ -235,6 +319,16 @@
             id="messageInput"
           />
           <button type="submit" class="btn btn-success">Send</button>
+
+          <!-- VOICE BUTTON (Hold to record) -->
+          <button type="button" class="btn btn-primary" id="voiceBtn">
+            🎤
+          </button>
+
+          <!-- RECORD BUTTON -->
+          <button type="button" class="btn btn-warning" id="recordBtn">
+            ⏺
+          </button>
 
           <button
             type="button"
@@ -250,14 +344,6 @@
             id="attachmentInput"
             style="display: none"
           />
-
-          <button type="button" class="btn btn-primary" id="voiceBtn">
-            🎤
-          </button>
-
-          <button type="button" class="btn btn-warning" id="recordBtn">
-            ⏺️
-          </button>
 
           <button type="button" class="btn btn-danger" id="recordVideoBtn">
             🎥
@@ -350,7 +436,7 @@
       document.addEventListener("DOMContentLoaded", function () {
 
         /* ==============================
-           GLOBAL VARIABLES
+            GLOBAL VARIABLES
         ============================== */
 
         const statusCircle = document.getElementById("statusCircle");
@@ -366,7 +452,7 @@
 
 
         /* ==============================
-           STATUS RENDER
+            STATUS RENDER
         ============================== */
 
         function renderStatus() {
@@ -426,7 +512,7 @@
 
 
         /* ==============================
-           OPEN STATUS
+            OPEN STATUS
         ============================== */
 
         function openStatusViewer() {
@@ -441,7 +527,7 @@
 
 
         /* ==============================
-           SHOW STATUS
+            SHOW STATUS
         ============================== */
 
         function showStatus() {
@@ -499,7 +585,7 @@
 
 
         /* ==============================
-           TIME AGO
+            TIME AGO
         ============================== */
 
         function timeAgo(time) {
@@ -521,7 +607,7 @@
 
 
         /* ==============================
-           NEXT / PREVIOUS STATUS
+            NEXT / PREVIOUS STATUS
         ============================== */
 
         function nextStatus() {
@@ -550,7 +636,7 @@
 
 
         /* ==============================
-           CLICK SKIP
+            CLICK SKIP
         ============================== */
 
         statusViewer.addEventListener("click", (e) => {
@@ -567,7 +653,7 @@
 
 
         /* ==============================
-           CLOSE STATUS
+            CLOSE STATUS
         ============================== */
 
         function closeStatus() {
@@ -577,7 +663,7 @@
 
 
         /* ==============================
-           MARK VIEWED
+            MARK VIEWED
         ============================== */
 
         function markViewed(index) {
@@ -589,7 +675,7 @@
 
 
         /* ==============================
-           STATUS UPLOAD
+            STATUS UPLOAD
         ============================== */
 
         function uploadStatus(file) {
@@ -630,7 +716,7 @@
 
 
         /* ==============================
-           CHAT AUTO SCROLL
+            CHAT AUTO SCROLL
         ============================== */
 
         function scrollChatToBottom() {
@@ -642,7 +728,7 @@
 
 
         /* ==============================
-           VOICE TO TEXT
+            VOICE TO TEXT
         ============================== */
 
         const voiceBtn = document.getElementById("voiceBtn");
@@ -662,57 +748,207 @@
         }
 
 
-        /* ==============================
-           AUDIO RECORD
-        ============================== */
+              /* ==============================
+                  AUDIO RECORD
+              ============================== */
+
+
+
+        let audioChunks = [];
+        let recordBtn = document.getElementById("recordBtn");
+        let recordingBar = document.getElementById("recordingBar");
+        let recordTime = document.getElementById("recordTime");
+
+        let sendAudio = document.getElementById("sendAudio");
+        let deleteAudio = document.getElementById("deleteAudio");
+        let cancelRecord = document.getElementById("cancelRecord");
+
+        let canvas = document.getElementById("waveCanvas");
+        let canvasCtx = canvas.getContext("2d");
+
+        let recording = false;
+        let timer;
+        let seconds = 0;
 
         let mediaRecorder;
-        let audioChunks = [];
-        const recordBtn = document.getElementById("recordBtn");
+        let analyser;
+        let dataArray;
+        let audioContext;
 
-        function recordAudio() {
+        let recordedBlob = null;
 
-          if (recordBtn.dataset.recording) {
 
-            mediaRecorder.stop();
-            recordBtn.dataset.recording = "";
+        /* HOLD START */
+        recordBtn.addEventListener("mousedown", startRecording);
+        recordBtn.addEventListener("touchstart", startRecording);
 
-          } else {
+        /* RELEASE STOP */
+        recordBtn.addEventListener("mouseup", stopRecording);
+        recordBtn.addEventListener("mouseleave", stopRecording);
+        recordBtn.addEventListener("touchend", stopRecording);
 
-            navigator.mediaDevices.getUserMedia({ audio: true })
-              .then(stream => {
 
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
+        async function startRecording(){
 
-                audioChunks = [];
+        if(recording) return;
 
-                mediaRecorder.ondataavailable = e =>
-                  audioChunks.push(e.data);
+        recording=true;
 
-                mediaRecorder.onstop = () => {
+        recordingBar.style.display="flex";
 
-                  const blob = new Blob(audioChunks, { type: "audio/webm" });
+        sendAudio.style.display="none";
+        deleteAudio.style.display="none";
 
-                  const formData = new FormData();
-                  formData.append("audio", blob, "voice.webm");
+        seconds=0;
 
-                  fetch("", {
-                    method: "POST",
-                    body: formData
-                  }).then(() => location.reload());
-                };
+        timer=setInterval(()=>{
 
-                recordBtn.dataset.recording = true;
-              });
-          }
+        seconds++;
+
+        let m=Math.floor(seconds/60);
+        let s=seconds%60;
+
+        recordTime.innerText=m+":"+(s<10?"0"+s:s);
+
+        },1000);
+
+
+        let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+
+        audioContext=new AudioContext();
+
+        let source=audioContext.createMediaStreamSource(stream);
+
+        analyser=audioContext.createAnalyser();
+        analyser.fftSize=256;
+
+        source.connect(analyser);
+
+        let bufferLength=analyser.frequencyBinCount;
+        dataArray=new Uint8Array(bufferLength);
+
+        drawWave();
+
+        mediaRecorder=new MediaRecorder(stream);
+        mediaRecorder.start();
+
+        audioChunks=[];
+
+        mediaRecorder.ondataavailable=e=>{
+        audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop=()=>{
+
+        clearInterval(timer);
+
+        recordedBlob=new Blob(audioChunks,{type:"audio/webm"});
+
+        sendAudio.style.display="inline-block";
+        deleteAudio.style.display="inline-block";
+
+        };
+
         }
 
-        recordBtn.onclick = recordAudio;
+
+
+        function drawWave(){
+
+        if(!recording) return;
+
+        requestAnimationFrame(drawWave);
+
+        analyser.getByteFrequencyData(dataArray);
+
+        canvasCtx.clearRect(0,0,canvas.width,canvas.height);
+
+        let barWidth=(canvas.width/dataArray.length)*2;
+        let x=0;
+
+        for(let i=0;i<dataArray.length;i++){
+
+        let barHeight=dataArray[i]/2;
+
+        canvasCtx.fillStyle="#25D366";
+
+        canvasCtx.fillRect(x,canvas.height-barHeight,barWidth,barHeight);
+
+        x+=barWidth+1;
+
+        }
+
+        }
+
+
+
+        function stopRecording(){
+
+        if(!recording) return;
+
+        recording=false;
+
+        if(mediaRecorder){
+        mediaRecorder.stop();
+        }
+
+        }
+
+
+
+        /* SEND AUDIO */
+
+        sendAudio.onclick=function(){
+
+        if(!recordedBlob) return;
+
+        const formData=new FormData();
+        formData.append("audio",recordedBlob,"voice.webm");
+
+        fetch("",{
+        method:"POST",
+        body:formData
+        }).then(()=>location.reload());
+
+        };
+
+
+
+        /* DELETE AUDIO */
+
+        deleteAudio.onclick=function(){
+
+        recordedBlob=null;
+        audioChunks=[];
+
+        recordingBar.style.display="none";
+
+        };
+
+
+
+        /* CANCEL RECORD */
+
+        cancelRecord.onclick=function(){
+
+        recording=false;
+
+        clearInterval(timer);
+
+        if(mediaRecorder){
+        mediaRecorder.stop();
+        }
+
+        audioChunks=[];
+        recordedBlob=null;
+
+        recordingBar.style.display="none";
+
+        };
 
 
         /* ==============================
-           VIDEO RECORD
+            VIDEO RECORD
         ============================== */
 
         let videoRecorder;
@@ -773,7 +1009,7 @@
 
 
         /* ==============================
-           INITIALIZE
+            INITIALIZE
         ============================== */
 
         renderStatus();
@@ -1343,5 +1579,141 @@
         filePreview.style.display = "none";
       }
     </script>
+
+    <script>
+  // Create and append modal container (only once)
+  const imgModal = document.createElement("div");
+imgModal.id = "imageModal";
+imgModal.style.cssText = `
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: #000000; /* solid black background */
+  justify-content: center;
+  align-items: center;
+`;
+imgModal.innerHTML = `
+  <img id="modalImg" style="max-width: 90vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 0 15px rgba(255,255,255,0.5); cursor: zoom-out;">
+`;
+document.body.appendChild(imgModal);
+
+  // When modal background or image is clicked, close modal
+  imgModal.addEventListener("click", () => {
+    imgModal.style.display = "none";
+  });
+
+  // Prevent modal image click from closing modal (optional)
+  document.getElementById("modalImg").addEventListener("click", e => {
+    e.stopPropagation();
+  });
+
+  // Add click event to all chat images to open modal
+  document.querySelectorAll(".chat-image").forEach(img => {
+    img.style.cursor = "pointer";
+    img.addEventListener("click", () => {
+      const modalImg = document.getElementById("modalImg");
+      modalImg.src = img.src;
+      imgModal.style.display = "flex";
+    });
+  });
+</script>
+
+<script>
+    // PROFILE VIEW + EDIT
+    function viewProfile() {
+      const imgSrc = document.getElementById("profileImg").src;
+
+      // Create modal
+      const modal = document.createElement("div");
+      modal.id = "profileModal";
+      modal.style.position = "fixed";
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = "100%";
+      modal.style.height = "100%";
+      modal.style.background = "rgba(0,0,0,0.8)";
+      modal.style.display = "flex";
+      modal.style.alignItems = "center";
+      modal.style.justifyContent = "center";
+      modal.style.zIndex = 2000;
+
+      modal.innerHTML = `
+<div style="position: relative; display:inline-block;">
+
+  <img src="${imgSrc}" style="
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  ">
+
+  <div id="editProfileBtn" style="
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    background: #25D366;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    border: 3px solid white;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+  ">
+    ✏️
+  </div>
+
+</div>
+`;
+
+      document.body.appendChild(modal);
+
+      // Close modal if clicked outside image
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal) modal.remove();
+      });
+
+      // Upload new profile
+      const editBtn = document.getElementById("editProfileBtn");
+      const fileInput = document.getElementById("profileInput");
+
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // prevent closing modal
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("profile", file);
+
+        fetch("/upload_profile", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              // Update modal image + main profile image
+              document.getElementById("profileImg").src = data.profile_url;
+              modal.querySelector("img").src = data.profile_url;
+            } else {
+              alert(data.message || "Upload failed");
+            }
+          })
+          .catch(() => alert("Upload error"));
+      });
+    }
+  </script>
   </body>
 </html>
