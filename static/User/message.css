@@ -2,469 +2,346 @@
    GLOBAL
 ========================= */
 
-body {
-  background: #ece5dd;
+body{
+margin:0;
+background:#ece5dd;
+display:flex;
+height:100vh;
+overflow:hidden;
+font-family: Arial, Helvetica, sans-serif;
 }
-
 
 /* =========================
    STATUS SIDEBAR
 ========================= */
 
-.sidebar {
-  width: 260px;
-  background: #f8f9fa;
-  height: 100vh;
-  overflow-y: auto;
-  position: fixed;
-  left: 0;
-  top: 0;
-  padding: 15px;
+.sidebar{
+width:300px;
+background:#ffffff;
+border-right:1px solid #ddd;
+height:100vh;
+overflow-y:auto;
+padding:15px;
+flex-shrink:0;
 }
 
+/* Status Circle */
 
-/* Status Circle Wrapper */
-
-#statusCircleWrapper {
-  position: relative;
-  width: 70px;
-  height: 70px;
-  margin-top: 10px;
+#statusCircleWrapper{
+position:relative;
+width:65px;
+height:65px;
+margin-top:10px;
 }
 
-#statusCircleWrapper svg {
-  width: 70px;
-  height: 70px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotate(-90deg);
+#statusCircleWrapper svg{
+width:65px;
+height:65px;
+position:absolute;
+top:0;
+left:0;
+transform:rotate(-90deg);
 }
 
-#statusCircleWrapper img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  object-fit: cover;
-  cursor: pointer;
+#statusCircleWrapper img{
+width:55px;
+height:55px;
+border-radius:50%;
+position:absolute;
+top:5px;
+left:5px;
+object-fit:cover;
+cursor:pointer;
+border:2px solid white;
 }
 
-#statusCircleWrapper circle {
-  fill: none;
-  stroke-width: 4;
-  transition: stroke 0.3s;
-  cursor: pointer;
+#statusCircleWrapper circle{
+fill:none;
+stroke-width:4;
+transition:stroke 0.3s;
+cursor:pointer;
 }
-
 
 /* =========================
    STATUS VIEWER
 ========================= */
 
-.status-viewer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+.status-viewer{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
 }
 
 .status-viewer img,
-.status-viewer video {
-  max-width: 90%;
-  max-height: 90%;
+.status-viewer video{
+max-width:90%;
+max-height:90%;
 }
 
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 30px;
-  color: white;
-  cursor: pointer;
-  z-index: 1000;
+.close-btn{
+position:absolute;
+top:20px;
+right:30px;
+font-size:30px;
+color:white;
+cursor:pointer;
+z-index:1000;
 }
-
 
 /* =========================
    CHAT CONTAINER
 ========================= */
 
-.chat-container {
-  max-width: 600px;
-  margin-left: 280px;
-  margin-top: 20px;
-  height: 90vh;
-  display: flex;
-  flex-direction: column;
+.chat-container{
+flex:1;
+display:flex;
+flex-direction:column;
+height:100vh;
+background:#efeae2;
 }
-
-.chat-header {
-  background: #075e54;
-  color: white;
-  padding: 15px;
-  font-weight: bold;
-}
-
-
-/* Chat Messages Area */
-
-.chat-box {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  background: #efeae2;
-}
-
-.message {
-  max-width: 70%;
-  padding: 10px 15px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-    position: relative;
-}
-
-.sent {
-  background: #d9fdd3;
-  margin-left: auto;
-}
-
-.received {
-  background: white;
-}
-
-.time {
-  font-size: 11px;
-  display: block;
-  margin-top: 3px;
-  text-align: right;
-  color: #555;
-}
-
 
 /* =========================
-   CHAT INPUT AREA
+   CHAT HEADER
 ========================= */
 
-.chat-input {
-  background: white;
-  padding: 10px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
+.chat-header{
+background:#075e54;
+color:white;
+padding:10px 15px;
+display:flex;
+align-items:center;
+justify-content:space-between;
 }
-
 
 /* =========================
-   CALL MODAL
+   CHAT BOX
 ========================= */
 
-.callModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  z-index: 9999;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  color: #fff;
+.chat-box{
+flex:1;
+overflow-y:auto;
+padding:20px;
+background-image:url("https://i.imgur.com/7QZ5K0R.png");
+background-size:cover;
+background-position:center;
 }
 
+/* =========================
+   MESSAGE BUBBLES
+========================= */
 
-/* Call Header */
-
-.callHeader {
-  position: absolute;
-  top: 40px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
+.message{
+max-width:65%;
+padding:8px 12px;
+border-radius:8px;
+margin-bottom:8px;
+position:relative;
+font-size:14px;
+line-height:1.4;
 }
 
-.callHeader span {
-  display: block;
-  font-size: 14px;
-  opacity: 0.8;
+.sent{
+background:#d9fdd3;
+margin-left:auto;
+border-top-right-radius:0;
 }
 
-
-/* Call Video Layout */
-
-.callVideos {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.received{
+background:#ffffff;
+border-top-left-radius:0;
 }
 
-.callVideos video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.msgContent{
+position:relative;
+padding-right:40px;
 }
 
-
-/* Local Video Small Preview */
-
-#localVideo {
-  position: absolute;
-  width: 150px;
-  height: 200px;
-  bottom: 120px;
-  right: 20px;
-  border-radius: 10px;
-  border: 2px solid #fff;
-  object-fit: cover;
+.msgTime{
+font-size:10px;
+color:#777;
+position:absolute;
+bottom:4px;
+right:8px;
 }
 
+/* =========================
+   CHAT INPUT
+========================= */
 
-/* Call Buttons */
-
-.callControls {
-  position: absolute;
-  bottom: 40px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+.chat-input{
+background:#f0f2f5;
+padding:10px;
+display:flex;
+align-items:center;
+gap:8px;
+border-top:1px solid #ddd;
 }
 
-.callBtn {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  border: none;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+.chat-input input{
+border-radius:20px;
+padding:8px 15px;
+border:1px solid #ccc;
+flex:1;
 }
 
-.endCall {
-  background: #ff3b30;
-  color: white;
+.chat-input .btn-success{
+border-radius:50%;
+width:40px;
+height:40px;
+padding:0;
 }
-
-.acceptCall {
-  background: #34c759;
-  color: white;
-}
-
 
 /* =========================
    MESSAGE ACTIONS
 ========================= */
 
-.msgActions {
-  display: flex;
-  gap: 6px;
-  margin-top: 4px;
+.msgActions{
+display:flex;
+gap:6px;
+margin-top:4px;
 }
 
-.reactBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  position: absolute; /* message ke andar right-bottom corner */
-  bottom: 5px;
-  left: -30px;
-  bottom:10px;
-   border-radius: 50%;
-  border: none;
-  background: #eee;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  display: none; /* by default hidden */
+.reactBtn{
+background:#eee;
+border:none;
+cursor:pointer;
+font-size:16px;
+position:absolute;
+left:-28px;
+bottom:10px;
+border-radius:50%;
+width:28px;
+height:28px;
+display:none;
+align-items:center;
+justify-content:center;
+box-shadow:0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Jab message hover ho, react button show ho */
-.message:hover .reactBtn {
-  display: block;
+.message:hover .reactBtn{
+display:flex;
 }
-
-/* .reactBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-} */
-
 
 /* =========================
-   REACTION PANEL
+   REACTIONS
 ========================= */
 
-.reactionPanel {
-  position: absolute;
-  display: none;
-  background: white;
-  padding: 5px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
+.reactionPanel{
+position:absolute;
+display:none;
+background:white;
+padding:5px;
+border-radius:10px;
+box-shadow:0 4px 8px rgba(0,0,0,0.2);
+z-index:1000;
 top:0;
 left:0;
 }
 
-.reactionBox {
-  position: absolute;
-  bottom: -5px; /* thoda neeche dikhane ke liye */
-  right: 5px;   /* right side */
-  display: flex;
-  gap: 4px;     /* spacing between multiple emojis */
+.reactionBox{
+position:absolute;
+bottom:-5px;
+right:5px;
+display:flex;
+gap:4px;
 }
 
-.reaction {
-  background: #eee;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 14px;
+.reaction{
+background:#eee;
+padding:2px 6px;
+border-radius:10px;
+font-size:14px;
 }
-
-/* .reaction {
-  background: #eee;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 14px;
-  margin-right: 4px;
-} */
-
 
 /* =========================
-   MORE OPTIONS (3 DOT MENU)
+   MORE OPTIONS
 ========================= */
 
-.moreMenuWrapper {
-  position: relative;
-  display: inline-block;
+.moreMenuWrapper{
+position:absolute;
+top:5px;
+right:5px;
 }
 
-.moreMenu {
-  display: none;
-  position: absolute;
-  top: 20px;
-  right: 0;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
-  min-width: 100px;
+.moreBtn{
+background:none;
+border:none;
+font-size:18px;
+cursor:pointer;
 }
 
-.moreMenu button {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  text-align: left;
+.moreMenu{
+display:none;
+position:absolute;
+top:20px;
+right:0;
+background:white;
+border:1px solid #ccc;
+border-radius:6px;
+box-shadow:0 4px 8px rgba(0,0,0,0.2);
+z-index:1000;
+min-width:120px;
 }
 
-.moreMenu button:hover {
-  background: #f1f1f1;
+.moreMenu button{
+display:block;
+width:100%;
+background:none;
+border:none;
+padding:8px 10px;
+cursor:pointer;
+text-align:left;
 }
 
-
-/* =========================
-   DELETED MESSAGE
-========================= */
-
-.message.deleted {
-  position: relative;
-  background: #d9fdd3;
-  border-radius: 8px;
-  padding: 20px;
-  color: #555;
-  font-weight: 500;
-  max-width: 70%;
-}
-
-.message.deleted .deletedText {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  color: #555;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-
-/* Hide original message content */
-
-.message.deleted .msgContent,
-.message.deleted .msgActions {
-  display: none;
-}
-
-
-/* Hide reply preview */
-
-.message.deleted .replyBox {
-  display: none;
-}
-
-.moreMenuWrapper {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-}
-
-.moreBtn {
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.msgContent {
-  position: relative;
-  padding-right: 50px; /* space for time at right-bottom */
-}
-
-.msgTime {
-  position: absolute;
-  bottom: 5px;
-  right: 8px;
-  font-size: 10px;
-  color: #888;
+.moreMenu button:hover{
+background:#f1f1f1;
 }
 
 .iconBtn{
 background:none;
 border:none;
-font-size:18px;
+font-size:16px;
 cursor:pointer;
-padding:5px;
-}
-
-.iconBtn:hover{
-color:#25d366;
 }
 
 .deleteMenuBtn:hover{
 color:red;
 }
 
-.deletedText i.fa-comment-slash{
-  margin-right:6px;
-  opacity:0.6;
+/* =========================
+   DELETED MESSAGE
+========================= */
+
+.message.deleted{
+background:#e9edef;
+color:#666;
+font-style:italic;
 }
+
+.message.deleted .msgContent,
+.message.deleted .msgActions{
+display:none;
+}
+
+.deletedTextWrapper{
+padding:8px;
+}
+
+.deletedText{
+font-style:italic;
+color:#555;
+}
+
+/* =========================
+   AUDIO WAVE
+========================= */
 
 .wave{
 display:flex;
@@ -488,15 +365,110 @@ animation:wave 1s infinite ease-in-out;
 .wave span:nth-child(5){animation-delay:0.4s;}
 
 @keyframes wave{
-
 0%{height:6px;}
-
 50%{height:20px;}
-
 100%{height:6px;}
-
 }
 
+/* =========================
+   CALL MODAL
+========================= */
 
+.callModal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+z-index:9999;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:#fff;
+}
 
-/* STATUS */
+.callHeader{
+position:absolute;
+top:40px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.callHeader span{
+display:block;
+font-size:14px;
+opacity:0.8;
+}
+
+.callVideos{
+width:100%;
+height:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.callVideos video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+#localVideo{
+position:absolute;
+width:150px;
+height:200px;
+bottom:120px;
+right:20px;
+border-radius:10px;
+border:2px solid #fff;
+object-fit:cover;
+}
+
+.callControls{
+position:absolute;
+bottom:40px;
+width:100%;
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+.callBtn{
+width:65px;
+height:65px;
+border-radius:50%;
+border:none;
+font-size:26px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+}
+
+.endCall{
+background:#ff3b30;
+color:white;
+}
+
+.acceptCall{
+background:#34c759;
+color:white;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+.chat-box::-webkit-scrollbar{
+width:6px;
+}
+
+.chat-box::-webkit-scrollbar-thumb{
+background:#c1c1c1;
+border-radius:10px;
+}
+
